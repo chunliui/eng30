@@ -58,7 +58,7 @@ h3{font-size:15px;margin:18px 0 6px;color:#111}
       <tr><td class="c"><span class="tag t-a">A</span></td><td><b>听力日</b>：听力听 1 遍（不看文本）→ 跟读最长那句 3 遍 → 拼写前 5 词</td></tr>
       <tr><td class="c"><span class="tag t-b">B</span></td><td><b>阅读日</b>：阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述</td></tr>
     </table>
-    <div class="hint">同一个词，两天里以三种模态撞见三次：听到 → 看到 → 拼出来。这就是「记不住」的解法。</div>
+    <div class="hint"><b>两条线，两种闭环。</b>Ethan：同一集里的词两天内「听到 → 看到 → 拼出来」，三模态闭环。<br>扇贝：另一批词（词书 vs 生活场景，词表不重合），你补的是<b>产出</b>——每天挑 1 个最不熟的新词，用昨天真干的一件事造一句。</div>
   </div>
 
   <div class="card">
@@ -112,7 +112,7 @@ function renderToday(){
   var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，只清到期复习。明天切回 4:1。</div>':'';
   box.innerHTML='<h2>今天 · Day '+d+' / 30</h2>'+
     '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(m==='4:1'?'t-n':'t-r')+'">扇贝 '+m+'</span></div>'+
-    '<ul class="steps"><li>① 扇贝：先清复习'+(m==='4:1'?'，再看新词 5 个（新词量保持 5）':'（今天不学新词）')+'</li>'+
+    '<ul class="steps"><li>① 扇贝：先清复习'+(m==='4:1'?'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句':'（今天不学新词）→ 挑 1 个复习里卡住的词造一句')+'（用昨天真干的一件事，土没关系）</li>'+
     '<li>② Ethan English（12–15 分钟）：'+step+'</li>'+
     '<li>③ 回来在下面打卡表勾一行</li></ul>'+rn+out;
 }
