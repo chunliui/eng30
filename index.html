@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f766e">
+<title>英语 30 天</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0 0 40px;font:16px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f4f5f7;color:#1a1a1a}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px}
+header{background:linear-gradient(160deg,#0f766e,#115e59);color:#fff;padding:18px 14px 20px}
+header h1{margin:0 0 4px;font-size:20px;font-weight:700}
+header p{margin:0;font-size:13px;opacity:.85}
+.sd{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:14px}
+.sd input{flex:1;padding:8px 10px;border:0;border-radius:8px;font-size:15px}
+.card{background:#fff;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h2{margin:0 0 10px;font-size:16px;font-weight:700;color:#0f766e}
+.big{font-size:22px;font-weight:800;line-height:1.35;margin:2px 0 6px}
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;vertical-align:2px}
+.t-a{background:#ecfdf5;color:#047857}
+.t-b{background:#eff6ff;color:#1d4ed8}
+.t-r{background:#fef2f2;color:#b91c1c}
+.t-n{background:#f3f4f6;color:#374151}
+ul.steps{margin:10px 0 0;padding-left:20px}
+ul.steps li{margin:5px 0}
+.hint{margin-top:12px;padding:10px 12px;background:#f9fafb;border-left:3px solid #0f766e;border-radius:0 8px 8px 0;font-size:13px;color:#374151}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 4px;border-bottom:1px solid #eef0f2;text-align:left;vertical-align:middle}
+th{font-size:12px;color:#6b7280;font-weight:600;position:sticky;top:0;background:#fff;z-index:1}
+tr.now{background:#ecfdf5}
+tr.now td{font-weight:600}
+td.c{text-align:center;width:38px}
+input[type=checkbox]{width:22px;height:22px;accent-color:#0f766e}
+input.num{width:100%;padding:6px 4px;border:1px solid #e5e7eb;border-radius:6px;font-size:14px;text-align:center}
+.wk{margin:16px 0 6px;font-size:13px;font-weight:700;color:#6b7280}
+.scroll{overflow-x:auto}
+.foot{font-size:12px;color:#9ca3af;text-align:center;margin-top:18px;line-height:1.8}
+h3{font-size:15px;margin:18px 0 6px;color:#111}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>英语 30 天 · 手机版</h1>
+    <p>扇贝单词（词）＋ Ethan English（听 / 读 / 拼）</p>
+    <div class="sd"><span>开始日期</span><input type="date" id="start"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card" id="todayCard"></div>
+
+  <div class="card">
+    <h2>一集的节奏（记这一次就够）</h2>
+    <table>
+      <tr><td class="c"><span class="tag t-a">A</span></td><td><b>听力日</b>：听力听 1 遍（不看文本）→ 跟读最长那句 3 遍 → 拼写前 5 词</td></tr>
+      <tr><td class="c"><span class="tag t-b">B</span></td><td><b>阅读日</b>：阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述</td></tr>
+    </table>
+    <div class="hint">同一个词，两天里以三种模态撞见三次：听到 → 看到 → 拼出来。这就是「记不住」的解法。</div>
+  </div>
+
+  <div class="card">
+    <h2>30 天日历</h2>
+    <div class="scroll"><table id="cal"></table></div>
+    <div class="hint"><b>纯复习日</b>（Day 3 / 6 / 9 …）：扇贝切「纯复习单词」，不学新词，只清到期复习，第二天切回 4:1。<br>为什么不能靠降新词清复习：复习量 = 新词量 × 比例，降新词会把复习一起降下来。</div>
+  </div>
+
+  <div class="card">
+    <h2>打卡表</h2>
+    <div class="scroll"><table id="log"></table></div>
+    <div class="hint"><b>最低版也算完成</b>：扇贝只清复习 + 把当天那半集听完，8 分钟。<br><b>保号版也算</b>：打开扇贝看清数字关掉。不许断的是链条，不是强度。</div>
+  </div>
+
+  <div class="card">
+    <h2>三个检查点指标</h2>
+    <div class="scroll"><table id="cp"></table></div>
+    <div class="hint">只在 Day 7 / 14 / 21 / 28 填。①从 30% 涨到 60%+ → 方法有效。<br>①没涨但漏执行 &gt; 7 天 → 执行问题，不是方法问题。</div>
+  </div>
+
+  <div class="foot">数据只存在这台手机的浏览器里<br>换个浏览器或清缓存会丢失，别清</div>
+</div>
+
+<script>
+var KEY='eng30.v1';
+var OUT={3:'写 3 句 A1',5:'说 30 秒 A2',10:'写 3 句 B1',13:'说 30 秒 B2',17:'写 5 句 C1',20:'说 1 分钟 C2',24:'写 5 句 D1',27:'说 1 分钟 D2',29:'产物草稿',30:'交产物'};
+var A_TXT='听力听 1 遍（不看文本）→ 跟读最长句 3 遍 → 拼写前 5 词';
+var B_TXT='阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述';
+var state={start:'',done:{},min:{},card:{},rate:{},cp:{}};
+try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+function parseYMD(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);}
+function dayOf(){ if(!state.start) return 0; var t=new Date(); t.setHours(0,0,0,0); var s=parseYMD(state.start); s.setHours(0,0,0,0); return Math.floor((t-s)/86400000)+1; }
+function mode(d){return d%3===0?'纯复习':'4:1';}
+function ab(d){return d%2===1?'A':'B';}
+function ep(d){return Math.ceil(d/2);}
+
+var el=document.getElementById('start');
+el.value=state.start||ymd(new Date());
+if(!state.start){state.start=el.value;save();}
+el.addEventListener('change',function(){state.start=el.value;save();render();});
+
+function renderToday(){
+  var n=dayOf(),box=document.getElementById('todayCard');
+  if(n<1){box.innerHTML='<h2>今天</h2><div class="big">还没开始</div><p>把上面的开始日期改成你的 Day 1。</p>';return;}
+  if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 天走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
+  var d=n,a=ab(d),m=mode(d);
+  var step=a==='A'?'听力听 1 遍（<b>不看文本</b>）→ 挑最长那句跟读 3 遍 → 拼写入口做前 5 个词':'阅读入口读 → <b>只查简介里那 3 个词</b> → 抄 5 句 → 拼写入口清完余词 → 用 1 句英语复述这集在干什么';
+  var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d]+'</b></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
+  var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，只清到期复习。明天切回 4:1。</div>':'';
+  box.innerHTML='<h2>今天 · Day '+d+' / 30</h2>'+
+    '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(m==='4:1'?'t-n':'t-r')+'">扇贝 '+m+'</span></div>'+
+    '<ul class="steps"><li>① 扇贝：先清复习'+(m==='4:1'?'，再看新词 5 个（新词量保持 5）':'（今天不学新词）')+'</li>'+
+    '<li>② Ethan English（12–15 分钟）：'+step+'</li>'+
+    '<li>③ 回来在下面打卡表勾一行</li></ul>'+rn+out;
+}
+
+function renderCal(){
+  var t=document.getElementById('cal'),n=dayOf();
+  var h='<tr><th class="c">Day</th><th>Ep / 日型</th><th>扇贝</th><th>输出</th></tr>';
+  for(var d=1;d<=30;d++){
+    if(d===1||d===8||d===15||d===22) h+='<tr><td colspan="4" class="wk">第 '+Math.ceil(d/7)+' 周</td></tr>';
+    var a=ab(d);
+    h+='<tr'+(d===n?' class="now"':'')+'><td class="c">'+d+'</td>'+
+       '<td>Ep.'+ep(d)+' <span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+'</span></td>'+
+       '<td>'+(d%3===0?'<span class="tag t-r">纯复习</span>':'4:1')+'</td>'+
+       '<td>'+(OUT[d]||'—')+'</td></tr>';
+  }
+  t.innerHTML=h;
+}
+
+function renderLog(){
+  var t=document.getElementById('log'),n=dayOf();
+  var h='<tr><th class="c">Day</th><th class="c">完成</th><th>Ep</th><th>分钟</th><th>卡词</th></tr>';
+  for(var d=1;d<=30;d++){
+    h+='<tr'+(d===n?' class="now"':'')+'><td class="c">'+d+'</td>'+
+      '<td class="c"><input type="checkbox" data-k="done" data-d="'+d+'"'+(state.done[d]?' checked':'')+'></td>'+
+      '<td>Ep.'+ep(d)+' '+ab(d)+'</td>'+
+      '<td style="width:64px"><input class="num" type="number" inputmode="numeric" data-k="min" data-d="'+d+'" value="'+(state.min[d]||'')+'"></td>'+
+      '<td style="width:64px"><input class="num" type="number" inputmode="numeric" data-k="card" data-d="'+d+'" value="'+(state.card[d]||'')+'"></td></tr>';
+  }
+  t.innerHTML=h;
+}
+
+function renderCp(){
+  var t=document.getElementById('cp');
+  var rows=[['rate','① 第 7 天通过率（%）'],['caught','② A 日第一遍抓住的完整句数'],['card','③「知道有但想不起来」次数']];
+  var days=[7,14,21,28];
+  var h='<tr><th>指标</th>'+days.map(function(d){return '<th class="c">Day '+d+'</th>';}).join('')+'</tr>';
+  rows.forEach(function(r){
+    h+='<tr><td>'+r[1]+'</td>'+days.map(function(d){
+      var k=r[0]+d;
+      return '<td class="c"><input class="num" type="number" inputmode="numeric" data-k="cp" data-d="'+k+'" value="'+(state.cp[k]||'')+'"></td>';
+    }).join('')+'</tr>';
+  });
+  t.innerHTML=h;
+}
+
+document.addEventListener('change',function(e){
+  var x=e.target,k=x.getAttribute('data-k'),d=x.getAttribute('data-d');
+  if(!k) return;
+  if(k==='done'){ state.done[d]=x.checked; }
+  else if(k==='cp'){ state.cp[d]=x.value; }
+  else { state[k][d]=x.value; }
+  save();
+});
+document.addEventListener('input',function(e){
+  var x=e.target,k=x.getAttribute('data-k'),d=x.getAttribute('data-d');
+  if(!k||k==='done') return;
+  if(k==='cp'){state.cp[d]=x.value;} else {state[k][d]=x.value;}
+  save();
+});
+
+function render(){renderToday();renderCal();renderLog();renderCp();}
+render();
+</script>
+</body>
+</html>
