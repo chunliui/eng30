@@ -64,7 +64,7 @@ h3{font-size:15px;margin:18px 0 6px;color:#111}
   <div class="card">
     <h2>30 天日历</h2>
     <div class="scroll"><table id="cal"></table></div>
-    <div class="hint"><b>纯复习日</b>（Day 3 / 6 / 9 …）：扇贝切「纯复习单词」，不学新词，只清到期复习，第二天切回 4:1。<br>为什么不能靠降新词清复习：复习量 = 新词量 × 比例，降新词会把复习一起降下来。</div>
+    <div class="hint"><b>纯复习日</b>（Day 3 / 6 / 9 …）：扇贝切「纯复习单词」，不学新词，只清到期复习（数量填 25，只做一轮），第二天切回 4:1。<br>为什么不能靠降新词清复习：复习量 = 新词量 × 比例，降新词会把复习一起降下来。</div>
   </div>
 
   <div class="card">
@@ -109,7 +109,7 @@ function renderToday(){
   var d=n,a=ab(d),m=mode(d);
   var step=a==='A'?'听力听 1 遍（<b>不看文本</b>）→ 挑最长那句跟读 3 遍 → 拼写入口做前 5 个词':'阅读入口读 → <b>只查简介里那 3 个词</b> → 抄 5 句 → 拼写入口清完余词 → 用 1 句英语复述这集在干什么';
   var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d][0]+'</b> '+OUT[d][1]+'<br><span style="opacity:.6">题号规则：字母＝第几周，数字＝周内第几题。题目要求见 02-句型模板与造句库.md</span></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
-  var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，只清到期复习。明天切回 4:1。</div>':'';
+  var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，复习数量填 25，只做一轮，清不完也停。明天切回 4:1。</div>':'';
   box.innerHTML='<h2>今天 · Day '+d+' / 30</h2>'+
     '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(m==='4:1'?'t-n':'t-r')+'">扇贝 '+m+'</span></div>'+
     '<ul class="steps"><li>① 扇贝：先清复习'+(m==='4:1'?'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句':'（今天不学新词）→ 挑 1 个复习里卡住的词造一句')+'（用昨天真干的一件事，土没关系）</li>'+
