@@ -79,7 +79,13 @@ h3{font-size:15px;margin:18px 0 6px;color:#111}
     <div class="hint">只在 Day 7 / 14 / 21 / 28 填。①从 30% 涨到 60%+ → 方法有效。<br>①没涨但漏执行 &gt; 7 天 → 执行问题，不是方法问题。</div>
   </div>
 
-  <div class="foot">数据只存在这台手机的浏览器里<br>换个浏览器或清缓存会丢失，别清</div>
+  <div class="card">
+    <h2>我的输出</h2>
+    <div class="hint">写完就停在这页，<b>自动保存</b>。不用发给谁——它是留给 Day 30 的你回看的。哪天写了哪天就在这，不写空着也没关系。</div>
+    <div id="outs"></div>
+  </div>
+
+  <div class="foot">数据（含输出正文）只存在这台手机的浏览器里<br>换个浏览器或清缓存会丢失，别清</div>
 </div>
 
 <script>
@@ -87,7 +93,7 @@ var KEY='eng30.v1';
 var OUT={3:['A1','写 3 句 · 我的一天','我的一天'],5:['A2','说 30 秒 · 自我介绍','自我介绍'],10:['B1','写 3 句 · 我为什么在学英语','为什么学英语'],13:['B2','说 30 秒 · 我最喜欢的一个东西','最喜欢的东西'],17:['C1','写 5 句 · 我工作里最烦的一件事','工作里最烦的事'],20:['C2','说 1 分钟 · 一个你熟悉的地方','熟悉的地方'],24:['D1','写 5 句 · 我想改变的一个习惯','想改的习惯'],27:['D2','说 1 分钟 · 工作/爱好里的一个东西','产物彩排'],29:['草稿','Day 30 产物的第一版','产物草稿'],30:['产物','交 30 天产物（录音/日记/邮件择一）','交产物']};
 var A_TXT='听力听 1 遍（不看文本）→ 跟读最长句 3 遍 → 拼写前 5 词';
 var B_TXT='阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述';
-var state={start:'',done:{},min:{},card:{},rate:{},cp:{}};
+var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{}};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
@@ -108,7 +114,7 @@ function renderToday(){
   if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 天走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
   var d=n,a=ab(d),m=mode(d);
   var step=a==='A'?'听力听 1 遍（<b>不看文本</b>）→ 挑最长那句跟读 3 遍 → 拼写入口做前 5 个词':'阅读入口读 → <b>只查简介里那 3 个词</b> → 抄 5 句 → 拼写入口清完余词 → 用 1 句英语复述这集在干什么';
-  var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d][0]+'</b> '+OUT[d][1]+'<br><span style="opacity:.6">题号规则：字母＝第几周，数字＝周内第几题。题目要求见 02-句型模板与造句库.md</span></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
+  var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d][0]+'</b> '+OUT[d][1]+'　<a href="#outs" style="white-space:nowrap">↓ 去写</a><br><span style="opacity:.6">写完在页面下方「我的输出」里，自动保存。题目要求见 02-句型模板与造句库.md</span></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
   var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，复习数量填 25，只做一轮，清不完也停。明天切回 4:1。</div>':'';
   box.innerHTML='<h2>今天 · Day '+d+' / 30</h2>'+
     '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(m==='4:1'?'t-n':'t-r')+'">扇贝 '+m+'</span></div>'+
@@ -173,7 +179,19 @@ document.addEventListener('input',function(e){
   save();
 });
 
-function render(){renderToday();renderCal();renderLog();renderCp();}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderOuts(){
+  var box=document.getElementById('outs'),h='',n=dayOf();
+  Object.keys(OUT).forEach(function(d){
+    var k=OUT[d],today=(+d===n);
+    h+='<div style="margin-top:16px'+(today?';padding:10px;background:#ecfdf5;border-radius:10px':'')+'">'+
+       '<div style="font-size:13px;font-weight:700;color:#0f766e">Day '+d+' · '+k[0]+' · '+k[1]+(today?'　<span class="tag t-a">今天</span>':'')+'</div>'+
+       '<textarea data-k="out" data-d="'+d+'" rows="3" placeholder="写下你自己的句子…" style="width:100%;margin-top:6px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.6 inherit;resize:vertical">'+esc(state.out[d]||'')+'</textarea></div>';
+  });
+  box.innerHTML=h;
+}
+
+function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();}
 render();
 </script>
 </body>
