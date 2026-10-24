@@ -38,6 +38,11 @@ input.num{width:100%;padding:6px 4px;border:1px solid #e5e7eb;border-radius:6px;
 .scroll{overflow-x:auto}
 .foot{font-size:12px;color:#9ca3af;text-align:center;margin-top:18px;line-height:1.8}
 h3{font-size:15px;margin:18px 0 6px;color:#111}
+nav{position:sticky;top:0;z-index:6;background:#fff;border-bottom:1px solid #eef0f2;padding:8px 10px;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+nav a{flex:0 0 auto;padding:5px 12px;border-radius:999px;background:#f3f4f6;color:#374151;font-size:13px;text-decoration:none;white-space:nowrap}
+button{display:block;width:100%;margin-top:10px;padding:11px;border:0;border-radius:9px;background:#0f766e;color:#fff;font-size:15px;font-weight:600}
+button.g{background:#e5e7eb;color:#374151}
+textarea,input{font-family:inherit}
 </style>
 </head>
 <body>
@@ -48,6 +53,16 @@ h3{font-size:15px;margin:18px 0 6px;color:#111}
     <div class="sd"><span>开始日期</span><input type="date" id="start"></div>
   </div>
 </header>
+
+<nav>
+  <a href="#todayCard">今天</a>
+  <a href="#c-cal">日历</a>
+  <a href="#c-log">打卡</a>
+  <a href="#c-cp">检查点</a>
+  <a href="#c-out">输出</a>
+  <a href="#c-sent">造句</a>
+  <a href="#c-bk">备份</a>
+</nav>
 
 <div class="wrap">
   <div class="card" id="todayCard"></div>
@@ -61,28 +76,43 @@ h3{font-size:15px;margin:18px 0 6px;color:#111}
     <div class="hint"><b>两条线，两种闭环。</b>Ethan：同一集里的词两天内「听到 → 看到 → 拼出来」，三模态闭环。<br>扇贝：另一批词（词书 vs 生活场景，词表不重合），你补的是<b>产出</b>——每天挑 1 个最不熟的新词，用昨天真干的一件事造一句。</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="c-cal">
     <h2>30 天日历</h2>
     <div class="scroll"><table id="cal"></table></div>
     <div class="hint"><b>纯复习日</b>（Day 3 / 6 / 9 …）：扇贝切「纯复习单词」，不学新词，只清到期复习（数量填 25，只做一轮），第二天切回 4:1。<br>为什么不能靠降新词清复习：复习量 = 新词量 × 比例，降新词会把复习一起降下来。</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="c-log">
     <h2>打卡表</h2>
     <div class="scroll"><table id="log"></table></div>
     <div class="hint"><b>最低版也算完成</b>：扇贝只清复习 + 把当天那半集听完，8 分钟。<br><b>保号版也算</b>：打开扇贝看清数字关掉。不许断的是链条，不是强度。</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="c-cp">
     <h2>三个检查点指标</h2>
     <div class="scroll"><table id="cp"></table></div>
     <div class="hint">只在 Day 7 / 14 / 21 / 28 填。①从 30% 涨到 60%+ → 方法有效。<br>①没涨但漏执行 &gt; 7 天 → 执行问题，不是方法问题。</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="c-out">
     <h2>我的输出</h2>
     <div class="hint">写完就停在这页，<b>自动保存</b>。不用发给谁——它是留给 Day 30 的你回看的。哪天写了哪天就在这，不写空着也没关系。<br><b>改不改？</b>写的时候不改。写完只查一样：把句子丢进翻译，看回译的中文是不是你想说的意思——不是就换词。语法攒到每周日，只查 02 文件那 6 条，只挑 3 处改。</div>
     <div id="outs"></div>
+  </div>
+
+  <div class="card" id="c-sent">
+    <h2>造句存档</h2>
+    <div class="hint">每天写的那句都在这，倒着排。<b>看同一个词你换了几个场景用</b>——一个词出现在 3 天的句子里，它就真的归你了。</div>
+    <div id="sents"></div>
+  </div>
+
+  <div class="card" id="c-bk">
+    <h2>备份 · 换手机</h2>
+    <div class="hint"><b>数据只在这一台手机的浏览器里。</b>换手机、清缓存、换浏览器、开无痕——都会丢，找不回来。<br>每两周点一次「复制」，粘到微信收藏或备忘录里，一行字都不要改。</div>
+    <button onclick="copyAll()">复制全部内容</button>
+    <textarea id="bk" rows="4" placeholder="把上面复制出来的整段粘回这里，再点下面的恢复" style="width:100%;margin-top:10px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:8px;font:13px/1.5 inherit"></textarea>
+    <button class="g" onclick="restoreAll()">从上面粘贴的内容恢复</button>
+    <div id="bmsg" style="font-size:12px;color:#0f766e;margin-top:8px;min-height:16px"></div>
   </div>
 
   <div class="foot">数据（含输出正文）只存在这台手机的浏览器里<br>换个浏览器或清缓存会丢失，别清</div>
@@ -93,7 +123,7 @@ var KEY='eng30.v1';
 var OUT={3:['A1','写 3 句 · 我的一天','我的一天'],5:['A2','说 30 秒 · 自我介绍','自我介绍'],10:['B1','写 3 句 · 我为什么在学英语','为什么学英语'],13:['B2','说 30 秒 · 我最喜欢的一个东西','最喜欢的东西'],17:['C1','写 5 句 · 我工作里最烦的一件事','工作里最烦的事'],20:['C2','说 1 分钟 · 一个你熟悉的地方','熟悉的地方'],24:['D1','写 5 句 · 我想改变的一个习惯','想改的习惯'],27:['D2','说 1 分钟 · 工作/爱好里的一个东西','产物彩排'],29:['草稿','Day 30 产物的第一版','产物草稿'],30:['产物','交 30 天产物（录音/日记/邮件择一）','交产物']};
 var A_TXT='听力听 1 遍（不看文本）→ 跟读最长句 3 遍 → 拼写前 5 词';
 var B_TXT='阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述';
-var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{}};
+var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{}};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
@@ -102,6 +132,7 @@ function dayOf(){ if(!state.start) return 0; var t=new Date(); t.setHours(0,0,0,
 function mode(d){return d%3===0?'纯复习':'4:1';}
 function ab(d){return d%2===1?'A':'B';}
 function ep(d){return Math.ceil(d/2);}
+function dateOfDay(d){ if(!state.start) return ''; var s=parseYMD(state.start); s.setDate(s.getDate()+d-1); return (s.getMonth()+1)+'月'+s.getDate()+'日'; }
 
 var el=document.getElementById('start');
 el.value=state.start||ymd(new Date());
@@ -116,11 +147,16 @@ function renderToday(){
   var step=a==='A'?'听力听 1 遍（<b>不看文本</b>）→ 挑最长那句跟读 3 遍 → 拼写入口做前 5 个词':'阅读入口读 → <b>只查简介里那 3 个词</b> → 抄 5 句 → 拼写入口清完余词 → 用 1 句英语复述这集在干什么';
   var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d][0]+'</b> '+OUT[d][1]+'　<a href="#outs" style="white-space:nowrap">↓ 去写</a><br><span style="opacity:.6">写完在页面下方「我的输出」里，自动保存。题目要求见 02-句型模板与造句库.md</span></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
   var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，复习数量填 25，只做一轮，清不完也停。明天切回 4:1。</div>':'';
-  box.innerHTML='<h2>今天 · Day '+d+' / 30</h2>'+
+  var sw='<div style="margin-top:14px;padding-top:12px;border-top:1px dashed #e5e7eb">'+
+    '<div style="font-size:13px;font-weight:700;color:#0f766e">今天的造句（3 分钟，天天做）</div>'+
+    '<input data-k="sentw" data-d="'+d+'" value="'+esc(state.sentw[d]||'')+'" placeholder="今天用的词（1 个就够）" style="width:100%;margin-top:7px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.5 inherit">'+
+    '<textarea data-k="sent" data-d="'+d+'" rows="2" placeholder="用它造一句：写你昨天真干的一件事，土没关系" style="width:100%;margin-top:8px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.6 inherit;resize:vertical">'+esc(state.sent[d]||'')+'</textarea>'+
+    '<div style="font-size:12px;color:#9ca3af;margin-top:6px">写完 30 秒：丢进翻译，看回译的中文是不是你想说的意思。</div></div>';
+  box.innerHTML='<h2>今天 · Day '+d+' / 30 <span style="font-weight:400;font-size:12px;color:#9ca3af">'+dateOfDay(d)+'</span></h2>'+
     '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(m==='4:1'?'t-n':'t-r')+'">扇贝 '+m+'</span></div>'+
     '<ul class="steps"><li>① 扇贝：先清复习'+(m==='4:1'?'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句':'（今天不学新词）→ 挑 1 个复习里卡住的词造一句')+'（用昨天真干的一件事，土没关系）</li>'+
     '<li>② Ethan English（12–15 分钟）：'+step+'</li>'+
-    '<li>③ 回来在下面打卡表勾一行</li></ul>'+rn+out;
+    '<li>③ 回来在下面打卡表勾一行</li></ul>'+rn+out+sw;
 }
 
 function renderCal(){
@@ -191,7 +227,54 @@ function renderOuts(){
   box.innerHTML=h;
 }
 
-function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();}
+function renderSents(){
+  var box=document.getElementById('sents'),h='';
+  for(var d=30;d>=1;d--){
+    var w=(state.sentw&&state.sentw[d])||'', s=(state.sent&&state.sent[d])||'';
+    if(!w&&!s) continue;
+    h+='<div style="margin-top:12px;padding:10px 12px;background:#f9fafb;border-radius:10px">'+
+       '<div style="font-size:12px;color:#6b7280">Day '+d+' · Ep.'+ep(d)+' · '+dateOfDay(d)+'</div>'+
+       (w?'<div style="font-size:15px;font-weight:700;color:#0f766e;margin-top:3px">'+esc(w)+'</div>':'')+
+       (s?'<div style="margin-top:4px;white-space:pre-wrap">'+esc(s)+'</div>':'')+'</div>';
+  }
+  box.innerHTML=h||'<div style="color:#9ca3af;margin-top:12px">还没有。今天写下第一句。</div>';
+}
+function exportText(){
+  var L=['英语 30 天 · 备份','开始日期：'+(state.start||''),''];
+  for(var d=1;d<=30;d++){
+    var a=[];
+    if(state.done[d])a.push('完成');
+    if(state.min[d])a.push(state.min[d]+'分');
+    if(state.card[d])a.push('卡词'+state.card[d]);
+    if(state.sentw&&state.sentw[d])a.push('词:'+state.sentw[d]);
+    if(state.sent&&state.sent[d])a.push('句:'+state.sent[d]);
+    if(OUT[d]&&state.out[d])a.push(OUT[d][0]+':'+state.out[d]);
+    if(a.length)L.push('Day '+d+' | '+a.join(' | '));
+  }
+  L.push('','检查点：'+JSON.stringify(state.cp));
+  L.push('','---- 恢复用，下面这一行不要改 ----','JSON:'+JSON.stringify(state));
+  return L.join('\n');
+}
+function copyAll(){
+  var t=exportText(),ta=document.getElementById('bk'),m=document.getElementById('bmsg');
+  ta.value=t;
+  function ok(){m.textContent='已复制。去微信收藏或备忘录粘一下。';}
+  function manual(){ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}m.textContent='我已选中这段，长按→复制即可。';}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,manual);}
+  else{manual();}
+}
+function restoreAll(){
+  var ta=document.getElementById('bk'),m=document.getElementById('bmsg'),v=ta.value||'',i=v.lastIndexOf('JSON:');
+  if(i<0){m.textContent='没找到可恢复的内容。把「复制」出来的整段粘回来（含 JSON: 那一行）。';return;}
+  try{
+    var o=JSON.parse(v.slice(i+5).trim());
+    state=Object.assign({start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{}},o);
+    save();render();
+    document.getElementById('start').value=state.start||document.getElementById('start').value;
+    m.textContent='已恢复。';
+  }catch(e){m.textContent='内容不完整，恢复失败。';}
+}
+function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();renderSents();}
 render();
 </script>
 </body>
