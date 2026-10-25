@@ -66,7 +66,7 @@ textarea,input{font-family:inherit}
   <div class="wrap">
     <h1>英语 30 天 · 手机版</h1>
     <p>扇贝单词（词）＋ Ethan English（听 / 读 / 拼）</p>
-    <div class="sd"><span>开始日期</span><input type="date" id="start"></div>
+    <div class="sd"><span>今天</span><b id="todaylbl">—</b>　<b id="poslbl" style="color:#0f766e">—</b></div>
     <div class="sd"><span>一集几天</span><select id="per">
       <option value="2">2 天（快档）</option>
       <option value="3">3 天</option>
@@ -175,17 +175,15 @@ try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.pars
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function parseYMD(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);}
-function dayOf(){ if(!state.start) return 0; var t=new Date(); t.setHours(0,0,0,0); var s=parseYMD(state.start); s.setHours(0,0,0,0); return Math.floor((t-s)/86400000)+1; }
+function doneCnt(){var c=0;for(var i=1;i<=30;i++){if(state.done[i])c++;}return c;}
+function curDay(){var c=doneCnt()+1;return c>30?31:c;}
 function mode(d){return d%3===0?'纯复习':'4:1';}
 function per(){var p=+state.per;return (PH[p]?p:4);}
 function phOf(d){var p=per(),a=PH[p];return {k:a[(d-1)%p],i:(d-1)%p+1,p:p};}
 function ep(d){return Math.ceil(d/per());}
-function dateOfDay(d){ if(!state.start) return ''; var s=parseYMD(state.start); s.setDate(s.getDate()+d-1); return (s.getMonth()+1)+'月'+s.getDate()+'日'; }
+function todayStr(){var t=new Date();return (t.getMonth()+1)+'月'+t.getDate()+'日';}
 
-var el=document.getElementById('start');
-el.value=state.start||ymd(new Date());
-if(!state.start){state.start=el.value;save();}
-el.addEventListener('change',function(){state.start=el.value;save();render();});
+if(!state.start){state.start=ymd(new Date());save();}
 var ep_sel=document.getElementById('per');
 ep_sel.value=String(per());
 ep_sel.addEventListener('change',function(){state.per=+ep_sel.value||4;save();render();});
@@ -199,9 +197,8 @@ function renderTempo(){
 }
 
 function renderToday(){
-  var n=dayOf(),box=document.getElementById('todayCard');
-  if(n<1){box.innerHTML='<h2>今天</h2><div class="big">还没开始</div><p>把上面的开始日期改成你的 Day 1。</p>';return;}
-  if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 天走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
+  var n=curDay(),box=document.getElementById('todayCard');
+  if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 步走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
   var d=n,ph=phOf(d),a=ph.k,m=mode(d);
   var einfo=epOf(ep(d));
   var pure=(m==='纯复习');
@@ -213,8 +210,8 @@ function renderToday(){
     '<input data-k="sentw" data-d="'+d+'" value="'+esc(state.sentw[d]||'')+'" placeholder="今天用的词（1 个就够）" style="width:100%;margin-top:7px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.5 inherit">'+
     '<textarea data-k="sent" data-d="'+d+'" rows="2" placeholder="用它造一句：写你昨天真干的一件事，土没关系" style="width:100%;margin-top:8px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.6 inherit;resize:vertical">'+esc(state.sent[d]||'')+'</textarea>'+
     '<div style="font-size:12px;color:#9ca3af;margin-top:6px">写完 30 秒：丢进翻译，看回译的中文是不是你想说的意思。</div></div>';
-  var doneCnt=0,streak=0,i;
-  for(i=1;i<=30;i++){ if(state.done[i]) doneCnt++; }
+  var dnum=0,streak=0,i;
+  for(i=1;i<=30;i++){ if(state.done[i]) dnum++; }
   for(i=(state.done[d]?d:d-1);i>=1;i--){ if(state.done[i]) streak++; else break; }
   var cells='';
   for(i=1;i<=30;i++){ cells+='<span class="cell'+(state.done[i]?' on':'')+(i===d?' now':'')+'"></span>'; }
@@ -224,25 +221,27 @@ function renderToday(){
             : '今天开个头就算赢。';
   box.innerHTML=
     '<div class="hero"><img src="covers/'+ep(d)+'.webp" alt="" onerror="this.style.display=\'none\'">'+
-      '<div class="cap"><div style="font-size:12px;opacity:.9">Day '+d+' / 30 · '+dateOfDay(d)+'</div>'+
+      '<div class="cap"><div style="font-size:12px;opacity:.9">第 '+d+' 步 / 30 · 今天 '+todayStr()+'</div>'+
         '<div style="font-size:21px;font-weight:800;line-height:1.3;margin-top:2px">Ep.'+ep(d)+' '+einfo.t+'</div>'+
         '<div style="font-size:12px;opacity:.85">'+einfo.e+'　'+einfo.m+' 分钟 · '+einfo.l+' 句</div></div></div>'+
     '<div style="margin-top:14px">'+
       '<div class="grid30">'+cells+'</div>'+
-      '<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#6b7280;margin-top:7px"><span>完成 '+doneCnt+' / 30 天</span><span>'+cheer+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#6b7280;margin-top:7px"><span>已完成 '+dnum+' / 30 步</span><span>'+cheer+'</span></div>'+
       '<div style="margin-top:13px"><span class="tag t-a">第 '+ph.i+'/'+ph.p+' 天 · '+PHN[a]+'</span> <span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span> <span class="tag t-n">本集还剩 '+(ph.p-ph.i)+' 天</span></div>'+
-      '<details class="stepbox"><summary>'+(state.done[d]?'今天已打卡 ✓ 想看步骤就展开':'开始今天的 60 分钟 →')+'</summary>'+
+      '<details class="stepbox"><summary>开始这一步的 60 分钟 →</summary>'+
         '<ul class="steps">'+steps+'</ul>'+
         '<div class="hint"><b>时间被砍时</b>：剩 30 分钟 → 跟读 2 句 + 说 60 秒 + 打卡；剩 10 分钟 → 只说 60 秒 + 打卡。<b>输出永远最后砍。</b></div>'+
       '</details>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+epLinks(ep(d))+'</div>'+
-'<button data-act="done" data-d="'+d+'" style="margin-top:14px;background:'+(state.done[d]?'#047857':'#0f766e')+'">'+(state.done[d]?'今天已打卡 ✓　点一下撤销':'今天做完了 · 打卡')+'</button>'+
+'<button data-act="done" data-d="'+d+'" style="margin-top:14px">今天这一步做完了 · 打卡</button>'+
+    '<div style="font-size:12px;color:#9ca3af;margin-top:7px">打卡只是往前挪一格，不催你日期。'+
+      (doneCnt()>0?'　<span data-act="undo" style="color:#0f766e;text-decoration:underline;cursor:pointer">点错了？撤销上一次</span>':'')+'</div>'+
     '<div style="font-size:13px;color:#374151;margin:11px 0 0">① <b>扇贝（上班碎片时间做，不占这 1 小时）</b>：先清复习'+(pure?'（今天不学新词）→ 挑 1 个复习里卡住的词造一句':'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句')+'（用昨天真干的一件事，土没关系）</div>'+
     rn+out+sw+'</div>';
 }
 
 function renderCal(){
-  var t=document.getElementById('cal'),n=dayOf();
+  var t=document.getElementById('cal'),n=curDay();
   var h='<tr><th class="c">Day</th><th>Ep / 日型</th><th>扇贝</th><th>输出</th></tr>';
   for(var d=1;d<=30;d++){
     if(d===1||d===8||d===15||d===22) h+='<tr><td colspan="4" class="wk">第 '+Math.ceil(d/7)+' 周</td></tr>';
@@ -256,7 +255,7 @@ function renderCal(){
 }
 
 function renderLog(){
-  var t=document.getElementById('log'),n=dayOf();
+  var t=document.getElementById('log'),n=curDay();
   var h='<tr><th class="c">Day</th><th class="c">完成</th><th>Ep</th><th>分钟</th><th>卡词<br><span style="font-weight:400;font-size:10px;opacity:.6">想不起的</span></th></tr>';
   for(var d=1;d<=30;d++){
     h+='<tr'+(d===n?' class="now"':'')+'><td class="c">'+d+'</td>'+
@@ -302,12 +301,13 @@ document.addEventListener('click',function(e){
   while(x&&x.getAttribute&&!x.getAttribute('data-act')){ x=x.parentNode; }
   if(!x||!x.getAttribute) return;
   var k=x.getAttribute('data-act'),d=x.getAttribute('data-d');
-  if(k==='done'){ state.done[d]=!state.done[d]; save(); render(); }
+  if(k==='done'){ state.done[curDay()]=true; save(); render(); }
+  if(k==='undo'){ var c=doneCnt(); if(c>0){ delete state.done[c]; save(); render(); } }
 });
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function renderOuts(){
-  var box=document.getElementById('outs'),h='',n=dayOf();
+  var box=document.getElementById('outs'),h='',n=curDay();
   Object.keys(OUT).forEach(function(d){
     var k=OUT[d],today=(+d===n);
     h+='<div style="margin-top:16px'+(today?';padding:10px;background:#ecfdf5;border-radius:10px':'')+'">'+
@@ -323,7 +323,7 @@ function renderSents(){
     var w=(state.sentw&&state.sentw[d])||'', s=(state.sent&&state.sent[d])||'';
     if(!w&&!s) continue;
     h+='<div style="margin-top:12px;padding:10px 12px;background:#f9fafb;border-radius:10px">'+
-       '<div style="font-size:12px;color:#6b7280">Day '+d+' · Ep.'+ep(d)+' · '+dateOfDay(d)+'</div>'+
+       '<div style="font-size:12px;color:#6b7280">第 '+d+' 步 · Ep.'+ep(d)+'</div>'+
        (w?'<div style="font-size:15px;font-weight:700;color:#0f766e;margin-top:3px">'+esc(w)+'</div>':'')+
        (s?'<div style="margin-top:4px;white-space:pre-wrap">'+esc(s)+'</div>':'')+'</div>';
   }
@@ -358,9 +358,8 @@ function restoreAll(){
   if(i<0){m.textContent='没找到可恢复的内容。把「复制」出来的整段粘回来（含 JSON: 那一行）。';return;}
   try{
     var o=JSON.parse(v.slice(i+5).trim());
-    state=Object.assign({start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{}},o);
+    state=Object.assign({start:'',per:4,done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{},fr1:{},fr2:{},fr3:{}},o);
     save();render();
-    document.getElementById('start').value=state.start||document.getElementById('start').value;
     m.textContent='已恢复。';
   }catch(e){m.textContent='内容不完整，恢复失败。';}
 }
@@ -374,10 +373,14 @@ function renderEps(){
 }
 function renderFrag(){
   var t=document.getElementById('frag');if(!t)return;
-  var n=dayOf(),it=[['fr1','扇贝：复习清完 + 新词 5 + 一句造句'],['fr2','复听：昨天那一集再听一遍'],['fr3','默写：昨天卡的 3 个词拼一遍']];
+  var n=curDay(),it=[['fr1','扇贝：复习清完 + 新词 5 + 一句造句'],['fr2','复听：昨天那一集再听一遍'],['fr3','默写：昨天卡的 3 个词拼一遍']];
   t.innerHTML=it.map(function(x){return '<label style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f2f4;font-size:14px;line-height:1.45"><input type="checkbox" style="margin-top:3px" data-k="'+x[0]+'" data-d="'+n+'"'+(state[x[0]][n]?' checked':'')+'><span>'+x[1]+'</span></label>';}).join('');
 }
-function render(){renderTempo();renderToday();renderCal();renderLog();renderCp();renderOuts();renderSents();renderEps();renderFrag();
+function render(){
+  var tl=document.getElementById('todaylbl'),pl=document.getElementById('poslbl');
+  if(tl) tl.textContent=todayStr();
+  if(pl) pl.textContent='第 '+Math.min(curDay(),30)+' 步 / 30';
+  renderTempo();renderToday();renderCal();renderLog();renderCp();renderOuts();renderSents();renderEps();renderFrag();
   var sp=document.getElementById('epspan');
   if(sp) sp.textContent='Ep.1–Ep.'+Math.ceil(30/per())+'（一集 '+per()+' 天）';
 }
