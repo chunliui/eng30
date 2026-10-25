@@ -82,6 +82,12 @@ textarea,input{font-family:inherit}
     <div class="hint"><b>纯复习日</b>（Day 3 / 6 / 9 …）：扇贝切「纯复习单词」，不学新词，只清到期复习（数量填 25，只做一轮），第二天切回 4:1。<br>为什么不能靠降新词清复习：复习量 = 新词量 × 比例，降新词会把复习一起降下来。</div>
   </div>
 
+  <div class="card" id="c-eps">
+    <h2>49 集总表（源站 ethanenglish.cn）</h2>
+    <div class="scroll"><table id="eplist"></table></div>
+    <div class="hint">源站一共 <b>49 集</b>，总音频 369 分钟（约 6 小时），每集 7–9 分钟、133–203 句。<br>30 天计划只用到 <b>Ep.1–15</b>，剩下 34 集是 30 天之后接着走的，不用现在管。<br>点集名可直达那一集的听力页。</div>
+  </div>
+
   <div class="card" id="c-log">
     <h2>打卡表</h2>
     <div class="scroll"><table id="log"></table></div>
@@ -121,6 +127,9 @@ textarea,input{font-family:inherit}
 <script>
 var KEY='eng30.v1';
 var OUT={3:['A1','写 3 句 · 我的一天','我的一天'],5:['A2','说 30 秒 · 自我介绍','自我介绍'],10:['B1','写 3 句 · 我为什么在学英语','为什么学英语'],13:['B2','说 30 秒 · 我最喜欢的一个东西','最喜欢的东西'],17:['C1','写 5 句 · 我工作里最烦的一件事','工作里最烦的事'],20:['C2','说 1 分钟 · 一个你熟悉的地方','熟悉的地方'],24:['D1','写 5 句 · 我想改变的一个习惯','想改的习惯'],27:['D2','说 1 分钟 · 工作/爱好里的一个东西','产物彩排'],29:['草稿','Day 30 产物的第一版','产物草稿'],30:['产物','交 30 天产物（录音/日记/邮件择一）','交产物']};
+var EPS=[[1,"起床","Getting Out of Bed",9,202],[2,"洗漱","Brushing Teeth & Washing Up",9,203],[3,"穿衣服","Getting Dressed",7,167],[4,"吃早餐","Making Breakfast",7,141],[5,"出门","Getting Ready to Leave",5,161],[6,"地铁通勤","Subway Commute",7,162],[7,"开始上班","Starting Work",8,142],[8,"中午吃外卖","Ordering Takeout",6,139],[9,"下班回家","Heading Home After Work",7,153],[10,"做晚饭","Cooking Dinner",5,118],[11,"夜跑","Evening Run",6,137],[12,"刷手机","Scrolling on the Phone",9,198],[13,"打扫房间","Cleaning the Room",5,126],[14,"超市购物","Grocery Shopping",8,180],[15,"睡前准备","Getting Ready for Bed",9,184],[16,"开车出游","Road Trip",10,187],[17,"化妆打扮","Putting on Makeup",7,119],[18,"公园游玩","Park Outing",6,97],[19,"租船游湖","Boating on the Lake",8,119],[20,"喝咖啡","Coffee with a Friend",6,117],[21,"看电影","Watching a Movie",6,129],[22,"拆快递","Unboxing Packages",6,111],[23,"洗衣服","Doing Laundry",6,127],[24,"剪头发","Getting a Haircut",6,121],[25,"冒雨上班","Commuting in the Rain",8,158],[26,"牛肉火锅","Beef Hotpot",12,265],[27,"网红奶茶店","Bubble Tea Shop",9,170],[28,"购物节买耳机","Buying Earbuds on Sale",10,215],[29,"做周报","Weekly Report",7,133],[30,"朋友聚餐吃火锅","Hotpot with Friends",7,149],[31,"午餐吃面","Noodles for Lunch",7,149],[32,"午休","Nap at Work",9,186],[33,"大扫除","Deep Cleaning",10,216],[34,"看世界杯","Watching the World Cup",6,118],[35,"住校生活","Boarding School Life",6,133],[36,"上英语课","English Class",7,186],[37,"食堂午餐","School Cafeteria Lunch",8,162],[38,"减肥早餐","Diet Breakfast",5,122],[39,"做减脂午餐","Healthy Lunch",10,209],[40,"七夕约会","Qixi Date",7,145],[41,"周末加班","Weekend Overtime",9,189],[42,"夜跑练英语","Running and Learning",11,218],[43,"夜跑后半程","Second Half of the Run",9,215],[44,"视频幕后","Behind the Scenes",7,181],[45,"飞往美国","Flying to America",8,155],[46,"美国打Uber","Taking Uber in the US",6,154],[47,"酒店入住","Checking into the Hotel",7,164],[48,"金门大桥","Golden Gate Bridge",8,173],[49,"旧金山早晨","A Slow Morning in San Francisco",8,168]];
+function epOf(n){for(var i=0;i<EPS.length;i++){if(EPS[i][0]===n)return {t:EPS[i][1],e:EPS[i][2],m:EPS[i][3],l:EPS[i][4]};}return {t:'Ep.'+n,e:'',m:0,l:0};}
+function epLinks(n){var r=[['听力','listen'],['阅读','read'],['拼写','practice'],['视频','watch']];return r.map(function(x){return '<a href="https://ethanenglish.cn/#/'+x[1]+'/'+n+'" style="flex:1 1 44%;text-align:center;padding:9px 6px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:13px;font-weight:600;color:#0f766e;text-decoration:none;margin:0 0 8px">'+x[0]+'</a>';}).join('');}
 var STEP={A:[['0–10','盲听整集一遍，<b>不看文本</b>。听完记一个数：这一遍听懂了几个词'],['10–25','跟读 5 句，每句 3 遍：听 → 跟着读 → 自己读。追停顿和重音，不追速度'],['25–30','把那 5 句抄下来，<b>手写</b>'],['30–50','<b>说 60 秒</b>：今天 3 个词各造一句 → 连起来说 60 秒 → 录音 → 回放只找 1 个错'],['50–60','复盘打卡：听懂几个词 / 卡词 / 通过率']],B:[['0–15','读文本，<b>只查 3 个词</b>。第 4 个词也放过——查多了读不完'],['15–25','抄 5 句，只挑「我明天用得上的」'],['25–45','<b>写 5 句</b>（G 类写信骨架）：称呼 / 我为什么写 / 一件具体事 / 一个请求 / 结尾'],['45–55','出声读一遍自己写的。读不通就标记，<b>不当场改</b>'],['55–60','复盘打卡：卡词 / 通过率 / 写了几句']]};
 var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{}};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
@@ -143,6 +152,7 @@ function renderToday(){
   if(n<1){box.innerHTML='<h2>今天</h2><div class="big">还没开始</div><p>把上面的开始日期改成你的 Day 1。</p>';return;}
   if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 天走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
   var d=n,a=ab(d),m=mode(d);
+  var einfo=epOf(ep(d));
   var pure=(m==='纯复习');
   var steps=STEP[a].map(function(x){return '<li><b>'+x[0]+' 分钟</b>　'+x[1]+'</li>';}).join('');
   var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d][0]+'</b> '+OUT[d][1]+'　<a href="#outs" style="white-space:nowrap">↓ 去写</a><br><span style="opacity:.6">写完在页面下方「我的输出」里，自动保存。题目要求见 02-句型模板与造句库.md</span></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
@@ -154,6 +164,10 @@ function renderToday(){
     '<div style="font-size:12px;color:#9ca3af;margin-top:6px">写完 30 秒：丢进翻译，看回译的中文是不是你想说的意思。</div></div>';
   box.innerHTML='<h2>今天 · Day '+d+' / 30 <span style="font-weight:400;font-size:12px;color:#9ca3af">'+dateOfDay(d)+'</span></h2>'+
     '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span></div>'+
+    '<div style="background:#f8fafc;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;margin:10px 0 0">'+
+      '<div style="font-size:15px;font-weight:700">Ep.'+ep(d)+' '+einfo.t+' <span style="font-weight:400;font-size:13px;color:#6b7280">'+einfo.e+'</span></div>'+
+      '<div style="font-size:12px;color:#6b7280;margin:2px 0 9px">'+einfo.m+' 分钟 · '+einfo.l+' 句　（内容在 ethanenglish.cn，点下面入口直接到这一集）</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+epLinks(ep(d))+'</div></div>'+
     '<div style="font-size:13px;color:#374151;margin:8px 0 0">① <b>扇贝（上班碎片时间做，不占这 1 小时）</b>：先清复习'+(pure?'（今天不学新词）→ 挑 1 个复习里卡住的词造一句':'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句')+'（用昨天真干的一件事，土没关系）</div>'+
     '<div style="font-size:13px;font-weight:700;color:#0f766e;margin-top:14px">② 这 1 小时怎么用（Ep.'+ep(d)+' · '+a+' 日）</div>'+
     '<ul class="steps">'+steps+'</ul>'+
@@ -167,7 +181,7 @@ function renderCal(){
     if(d===1||d===8||d===15||d===22) h+='<tr><td colspan="4" class="wk">第 '+Math.ceil(d/7)+' 周</td></tr>';
     var a=ab(d);
     h+='<tr'+(d===n?' class="now"':'')+'><td class="c">'+d+'</td>'+
-       '<td>Ep.'+ep(d)+' <span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+'</span></td>'+
+       '<td>Ep.'+ep(d)+' '+epOf(ep(d)).t+' <span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+'</span></td>'+
        '<td>'+(d%3===0?'<span class="tag t-r">纯复习</span>':'4:1')+'</td>'+
        '<td>'+(OUT[d]?OUT[d][0]+' '+OUT[d][2]:'—')+'</td></tr>';
   }
@@ -275,7 +289,15 @@ function restoreAll(){
     m.textContent='已恢复。';
   }catch(e){m.textContent='内容不完整，恢复失败。';}
 }
-function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();renderSents();}
+function renderEps(){
+  var t=document.getElementById('eplist');if(!t)return;
+  var h='<tr><th class="c">Ep</th><th>这一集</th><th class="c">分钟</th><th class="c">句</th></tr>';
+  for(var i=0;i<EPS.length;i++){var e=EPS[i];
+    h+='<tr><td class="c">'+e[0]+'</td><td><a href="https://ethanenglish.cn/#/listen/'+e[0]+'" style="color:#0f766e;text-decoration:none">'+e[1]+'</a> <span style="color:#9ca3af;font-size:12px">'+e[2]+'</span></td>'+
+       '<td class="c">'+e[3]+'</td><td class="c">'+e[4]+'</td></tr>';}
+  t.innerHTML=h;
+}
+function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();renderEps();renderSents();}
 render();
 </script>
 </body>
