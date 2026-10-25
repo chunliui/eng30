@@ -67,6 +67,12 @@ textarea,input{font-family:inherit}
     <h1>英语 30 天 · 手机版</h1>
     <p>扇贝单词（词）＋ Ethan English（听 / 读 / 拼）</p>
     <div class="sd"><span>开始日期</span><input type="date" id="start"></div>
+    <div class="sd"><span>一集几天</span><select id="per">
+      <option value="2">2 天（快档）</option>
+      <option value="3">3 天</option>
+      <option value="4">4 天（推荐·现在的档）</option>
+      <option value="5">5 天（慢慢来）</option>
+    </select></div>
   </div>
 </header>
 
@@ -95,10 +101,8 @@ textarea,input{font-family:inherit}
   <summary>更多<br><span>日历 · 打卡 · 检查点 · 我的输出 · 造句存档 · 49 集 · 碎片时间 · 备份</span></summary>
   <div class="card">
     <h2>一集的节奏（记这一次就够）</h2>
-    <table>
-      <tr><td class="c"><span class="tag t-a">A</span></td><td><b>听力日 60 分钟</b>：盲听 10 → 跟读 5 句 15 → 抄 5 句 5 → 说 60 秒 20 → 复盘 10</td></tr>
-      <tr><td class="c"><span class="tag t-b">B</span></td><td><b>阅读日 60 分钟</b>：读+只查 3 词 15 → 抄 5 句 10 → 写 5 句 20 → 出声读 10 → 复盘 5</td></tr>
-    </table>
+    <table id="tempo"></table>
+    <div class="hint" style="margin-top:10px"><b>怎么改档</b>：上面「一集几天」随时能改，日历和集号自动重排，已打卡的记录不丢。<br><b>什么时候减一天</b>：盲听第一遍能抓住 <b>5 个以上完整句</b>，或拼写通过率到 70%，就减一天。<br><b>什么时候加一天</b>：连着 3 天做不完、或者做完就烦，就加一天。<b>卡在一集超过 5 天，硬着头皮往下走</b>——不是每句都要懂。</div>
     <div class="hint"><b>扇贝不占这 1 小时。</b>背单词是低难度、可打断的活儿，放上班碎片时间；听、说、写是高难度、不能断的活儿，放整块时间，两者不混。<br><b>两条线，两种闭环。</b>Ethan：同一集里的词两天内「听到 → 看到 → 拼出来」。扇贝：另一批词（词表不重合），你补的是<b>产出</b>——每天挑 1 个最不熟的词，用昨天真干的一件事造一句。</div>
   </div>
 
@@ -111,7 +115,7 @@ textarea,input{font-family:inherit}
   <div class="card" id="c-eps">
     <h2>49 集总表（源站 ethanenglish.cn）</h2>
     <div class="scroll"><table id="eplist"></table></div>
-    <div class="hint">源站一共 <b>49 集</b>，总音频 369 分钟（约 6 小时），每集 7–9 分钟、133–203 句。<br>30 天计划只用到 <b>Ep.1–15</b>，剩下 34 集是 30 天之后接着走的，不用现在管。<br>点集名可直达那一集的听力页。</div>
+    <div class="hint">源站一共 <b>49 集</b>，总音频 369 分钟（约 6 小时），每集 7–9 分钟、133–203 句。<br>30 天只走到 <b id="epspan"></b>，后面的是 30 天之后接着走的，不用现在管。<br>点集名可直达那一集的听力页。</div>
   </div>
 
   <div class="card" id="c-log">
@@ -157,28 +161,48 @@ var OUT={3:['A1','写 3 句 · 我的一天','我的一天'],5:['A2','说 30 秒
 var EPS=[[1,"起床","Getting Out of Bed",9,202],[2,"洗漱","Brushing Teeth & Washing Up",9,203],[3,"穿衣服","Getting Dressed",7,167],[4,"吃早餐","Making Breakfast",7,141],[5,"出门","Getting Ready to Leave",5,161],[6,"地铁通勤","Subway Commute",7,162],[7,"开始上班","Starting Work",8,142],[8,"中午吃外卖","Ordering Takeout",6,139],[9,"下班回家","Heading Home After Work",7,153],[10,"做晚饭","Cooking Dinner",5,118],[11,"夜跑","Evening Run",6,137],[12,"刷手机","Scrolling on the Phone",9,198],[13,"打扫房间","Cleaning the Room",5,126],[14,"超市购物","Grocery Shopping",8,180],[15,"睡前准备","Getting Ready for Bed",9,184],[16,"开车出游","Road Trip",10,187],[17,"化妆打扮","Putting on Makeup",7,119],[18,"公园游玩","Park Outing",6,97],[19,"租船游湖","Boating on the Lake",8,119],[20,"喝咖啡","Coffee with a Friend",6,117],[21,"看电影","Watching a Movie",6,129],[22,"拆快递","Unboxing Packages",6,111],[23,"洗衣服","Doing Laundry",6,127],[24,"剪头发","Getting a Haircut",6,121],[25,"冒雨上班","Commuting in the Rain",8,158],[26,"牛肉火锅","Beef Hotpot",12,265],[27,"网红奶茶店","Bubble Tea Shop",9,170],[28,"购物节买耳机","Buying Earbuds on Sale",10,215],[29,"做周报","Weekly Report",7,133],[30,"朋友聚餐吃火锅","Hotpot with Friends",7,149],[31,"午餐吃面","Noodles for Lunch",7,149],[32,"午休","Nap at Work",9,186],[33,"大扫除","Deep Cleaning",10,216],[34,"看世界杯","Watching the World Cup",6,118],[35,"住校生活","Boarding School Life",6,133],[36,"上英语课","English Class",7,186],[37,"食堂午餐","School Cafeteria Lunch",8,162],[38,"减肥早餐","Diet Breakfast",5,122],[39,"做减脂午餐","Healthy Lunch",10,209],[40,"七夕约会","Qixi Date",7,145],[41,"周末加班","Weekend Overtime",9,189],[42,"夜跑练英语","Running and Learning",11,218],[43,"夜跑后半程","Second Half of the Run",9,215],[44,"视频幕后","Behind the Scenes",7,181],[45,"飞往美国","Flying to America",8,155],[46,"美国打Uber","Taking Uber in the US",6,154],[47,"酒店入住","Checking into the Hotel",7,164],[48,"金门大桥","Golden Gate Bridge",8,173],[49,"旧金山早晨","A Slow Morning in San Francisco",8,168]];
 function epOf(n){for(var i=0;i<EPS.length;i++){if(EPS[i][0]===n)return {t:EPS[i][1],e:EPS[i][2],m:EPS[i][3],l:EPS[i][4]};}return {t:'Ep.'+n,e:'',m:0,l:0};}
 function epLinks(n){var r=[['听力','listen'],['阅读','read'],['拼写','practice'],['视频','watch']];return r.map(function(x){return '<a href="https://ethanenglish.cn/#/'+x[1]+'/'+n+'" style="flex:1 1 44%;text-align:center;padding:9px 6px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:13px;font-weight:600;color:#0f766e;text-decoration:none;margin:0 0 8px">'+x[0]+'</a>';}).join('');}
-var STEP={A:[['0–10','盲听整集一遍，<b>不看文本</b>。听完记一个数：这一遍听懂了几个词'],['10–25','跟读 5 句，每句 3 遍：听 → 跟着读 → 自己读。追停顿和重音，不追速度'],['25–30','把那 5 句抄下来，<b>手写</b>'],['30–50','<b>说 60 秒</b>：今天 3 个词各造一句 → 连起来说 60 秒 → 录音 → 回放只找 1 个错'],['50–60','复盘打卡：听懂几个词 / 卡词 / 通过率']],B:[['0–15','读文本，<b>只查 3 个词</b>。第 4 个词也放过——查多了读不完'],['15–25','抄 5 句，只挑「我明天用得上的」'],['25–45','<b>写 5 句</b>（G 类写信骨架）：称呼 / 我为什么写 / 一件具体事 / 一个请求 / 结尾'],['45–55','出声读一遍自己写的。读不通就标记，<b>不当场改</b>'],['55–60','复盘打卡：卡词 / 通过率 / 写了几句']]};
-var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{},fr1:{},fr2:{},fr3:{}};
+var STEP={
+listen:[['0–15','盲听整集一遍，<b>不看文本</b>。听完记一个数：这一遍听懂了几个词——只记数，不改任何决定'],['15–35','挑 3 句反复听，每句 5 遍。听不清就暂停，写下你听到的音（拼错也行）'],['35–50','对照文本看这 3 句，只查里面的生词（最多 3 个）。原来听成什么、实际是什么，各写一遍'],['50–60','复盘打卡：听懂几个词 / 这 3 句里听错在哪']],
+follow:[['0–10','放昨天那 3 句的原声，各听 1 遍，先不张嘴'],['10–35','跟读这 3 句，每句 5 遍：听 → 跟着读 → 自己读。追停顿和重音，不追速度'],['35–50','把这 3 句<b>手抄</b>下来，抄的时候念出声'],['50–60','录一遍这 3 句，回放只找 1 个错（哪个音、哪个词尾巴）。打卡']],
+read:[['0–20','读全文文本，<b>只查 3 个词</b>。第 4 个词也放过——查多了读不完'],['20–35','再放一遍音频，对着文本划出「刚才听不出来的地方」。只划，不查'],['35–50','抄 5 句，只挑「我明天用得上的」'],['50–60','复盘打卡：卡词 / 听懂率有没有比昨天高']],
+spell:[['0–20','拼写模式：先过这一集简介里的 3 个高频词 + 你自己卡的词，每个写 3 遍'],['20–40','听写 5 句：放音频，一句一停，整句写下来（写不全就写听到的）'],['40–55','对照原文改，错的地方圈出来——圈出来就是进步'],['55–60','复盘打卡：写对几个词 / 拼错最多的是哪个']],
+produce:[['0–10','从这一集和扇贝里各挑 1–2 个词，凑够 3 个'],['10–30','每个词造一句（用昨天真干的一件事）→ 三句连起来说 60 秒 → 录音'],['30–45','回放录音只找 1 个错；再把这三句写下来'],['45–55','<b>写 5 句</b>（G 类写信骨架）：称呼 / 我为什么写 / 一件具体事 / 一个请求 / 结尾'],['55–60','复盘打卡：说了几句 / 写了几句']]};
+var PH={2:['listen','read'],3:['listen','read','produce'],4:['listen','follow','read','produce'],5:['listen','follow','read','spell','produce']};
+var PHN={listen:'听力',follow:'跟读',read:'阅读',spell:'拼写',produce:'说写'};
+var PHD={listen:'盲听整集 → 挑 3 句反复听 → 对照文本查 3 词 → 记数',follow:'跟读 3 句各 5 遍 → 手抄 → 录音找 1 个错',read:'读全文只查 3 词 → 对音频划听不出的地方 → 抄 5 句',spell:'拼写高频词 → 听写 5 句 → 对照改',produce:'造 3 句 → 说 60 秒录音 → 写 5 句'};
+var state={start:'',per:4,done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{},fr1:{},fr2:{},fr3:{}};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function parseYMD(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2]);}
 function dayOf(){ if(!state.start) return 0; var t=new Date(); t.setHours(0,0,0,0); var s=parseYMD(state.start); s.setHours(0,0,0,0); return Math.floor((t-s)/86400000)+1; }
 function mode(d){return d%3===0?'纯复习':'4:1';}
-function ab(d){return d%2===1?'A':'B';}
-function ep(d){return Math.ceil(d/2);}
+function per(){var p=+state.per;return (PH[p]?p:4);}
+function phOf(d){var p=per(),a=PH[p];return {k:a[(d-1)%p],i:(d-1)%p+1,p:p};}
+function ep(d){return Math.ceil(d/per());}
 function dateOfDay(d){ if(!state.start) return ''; var s=parseYMD(state.start); s.setDate(s.getDate()+d-1); return (s.getMonth()+1)+'月'+s.getDate()+'日'; }
 
 var el=document.getElementById('start');
 el.value=state.start||ymd(new Date());
 if(!state.start){state.start=el.value;save();}
 el.addEventListener('change',function(){state.start=el.value;save();render();});
+var ep_sel=document.getElementById('per');
+ep_sel.value=String(per());
+ep_sel.addEventListener('change',function(){state.per=+ep_sel.value||4;save();render();});
+
+function renderTempo(){
+  var arr=PH[per()],h='';
+  for(var i=0;i<arr.length;i++){
+    h+='<tr><td class="c"><span class="tag '+(i%2?'t-b':'t-a')+'">D'+(i+1)+'</span></td><td><b>'+PHN[arr[i]]+' 60 分钟</b>：'+PHD[arr[i]]+'</td></tr>';
+  }
+  document.getElementById('tempo').innerHTML=h;
+}
 
 function renderToday(){
   var n=dayOf(),box=document.getElementById('todayCard');
   if(n<1){box.innerHTML='<h2>今天</h2><div class="big">还没开始</div><p>把上面的开始日期改成你的 Day 1。</p>';return;}
   if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 天走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
-  var d=n,a=ab(d),m=mode(d);
+  var d=n,ph=phOf(d),a=ph.k,m=mode(d);
   var einfo=epOf(ep(d));
   var pure=(m==='纯复习');
   var steps=STEP[a].map(function(x){return '<li><b>'+x[0]+' 分钟</b>　'+x[1]+'</li>';}).join('');
@@ -206,7 +230,7 @@ function renderToday(){
     '<div style="margin-top:14px">'+
       '<div class="grid30">'+cells+'</div>'+
       '<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#6b7280;margin-top:7px"><span>完成 '+doneCnt+' / 30 天</span><span>'+cheer+'</span></div>'+
-      '<div style="margin-top:13px"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> <span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span></div>'+
+      '<div style="margin-top:13px"><span class="tag t-a">第 '+ph.i+'/'+ph.p+' 天 · '+PHN[a]+'</span> <span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span> <span class="tag t-n">本集还剩 '+(ph.p-ph.i)+' 天</span></div>'+
       '<details class="stepbox"><summary>'+(state.done[d]?'今天已打卡 ✓ 想看步骤就展开':'开始今天的 60 分钟 →')+'</summary>'+
         '<ul class="steps">'+steps+'</ul>'+
         '<div class="hint"><b>时间被砍时</b>：剩 30 分钟 → 跟读 2 句 + 说 60 秒 + 打卡；剩 10 分钟 → 只说 60 秒 + 打卡。<b>输出永远最后砍。</b></div>'+
@@ -222,9 +246,9 @@ function renderCal(){
   var h='<tr><th class="c">Day</th><th>Ep / 日型</th><th>扇贝</th><th>输出</th></tr>';
   for(var d=1;d<=30;d++){
     if(d===1||d===8||d===15||d===22) h+='<tr><td colspan="4" class="wk">第 '+Math.ceil(d/7)+' 周</td></tr>';
-    var a=ab(d);
+    var ph=phOf(d);
     h+='<tr'+(d===n?' class="now"':'')+'><td class="c">'+d+'</td>'+
-       '<td>Ep.'+ep(d)+' '+epOf(ep(d)).t+' <span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+'</span></td>'+
+       '<td>Ep.'+ep(d)+' '+epOf(ep(d)).t+' <span class="tag '+(ph.i%2?'t-a':'t-b')+'">D'+ph.i+' '+PHN[ph.k]+'</span></td>'+
        '<td>'+(d%3===0?'<span class="tag t-r">纯复习</span>':'4:1')+'</td>'+
        '<td>'+(OUT[d]?OUT[d][0]+' '+OUT[d][2]:'—')+'</td></tr>';
   }
@@ -237,7 +261,7 @@ function renderLog(){
   for(var d=1;d<=30;d++){
     h+='<tr'+(d===n?' class="now"':'')+'><td class="c">'+d+'</td>'+
       '<td class="c"><input type="checkbox" data-k="done" data-d="'+d+'"'+(state.done[d]?' checked':'')+'></td>'+
-      '<td>Ep.'+ep(d)+' '+ab(d)+'</td>'+
+      '<td>Ep.'+ep(d)+' '+PHN[phOf(d).k]+'</td>'+
       '<td style="width:64px"><input class="num" type="number" inputmode="numeric" data-k="min" data-d="'+d+'" value="'+(state.min[d]||'')+'"></td>'+
       '<td style="width:64px"><input class="num" type="number" inputmode="numeric" data-k="card" data-d="'+d+'" value="'+(state.card[d]||'')+'"></td></tr>';
   }
@@ -353,7 +377,10 @@ function renderFrag(){
   var n=dayOf(),it=[['fr1','扇贝：复习清完 + 新词 5 + 一句造句'],['fr2','复听：昨天那一集再听一遍'],['fr3','默写：昨天卡的 3 个词拼一遍']];
   t.innerHTML=it.map(function(x){return '<label style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f2f4;font-size:14px;line-height:1.45"><input type="checkbox" style="margin-top:3px" data-k="'+x[0]+'" data-d="'+n+'"'+(state[x[0]][n]?' checked':'')+'><span>'+x[1]+'</span></label>';}).join('');
 }
-function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();renderEps();renderFrag();renderSents();}
+function render(){renderTempo();renderToday();renderCal();renderLog();renderCp();renderOuts();renderSents();renderEps();renderFrag();
+  var sp=document.getElementById('epspan');
+  if(sp) sp.textContent='Ep.1–Ep.'+Math.ceil(30/per())+'（一集 '+per()+' 天）';
+}
 render();
 </script>
 </body>
