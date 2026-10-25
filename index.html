@@ -70,10 +70,10 @@ textarea,input{font-family:inherit}
   <div class="card">
     <h2>一集的节奏（记这一次就够）</h2>
     <table>
-      <tr><td class="c"><span class="tag t-a">A</span></td><td><b>听力日</b>：听力听 1 遍（不看文本）→ 跟读最长那句 3 遍 → 拼写前 5 词</td></tr>
-      <tr><td class="c"><span class="tag t-b">B</span></td><td><b>阅读日</b>：阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述</td></tr>
+      <tr><td class="c"><span class="tag t-a">A</span></td><td><b>听力日 60 分钟</b>：盲听 10 → 跟读 5 句 15 → 抄 5 句 5 → 说 60 秒 20 → 复盘 10</td></tr>
+      <tr><td class="c"><span class="tag t-b">B</span></td><td><b>阅读日 60 分钟</b>：读+只查 3 词 15 → 抄 5 句 10 → 写 5 句 20 → 出声读 10 → 复盘 5</td></tr>
     </table>
-    <div class="hint"><b>两条线，两种闭环。</b>Ethan：同一集里的词两天内「听到 → 看到 → 拼出来」，三模态闭环。<br>扇贝：另一批词（词书 vs 生活场景，词表不重合），你补的是<b>产出</b>——每天挑 1 个最不熟的新词，用昨天真干的一件事造一句。</div>
+    <div class="hint"><b>扇贝不占这 1 小时。</b>背单词是低难度、可打断的活儿，放上班碎片时间；听、说、写是高难度、不能断的活儿，放整块时间，两者不混。<br><b>两条线，两种闭环。</b>Ethan：同一集里的词两天内「听到 → 看到 → 拼出来」。扇贝：另一批词（词表不重合），你补的是<b>产出</b>——每天挑 1 个最不熟的词，用昨天真干的一件事造一句。</div>
   </div>
 
   <div class="card" id="c-cal">
@@ -85,7 +85,7 @@ textarea,input{font-family:inherit}
   <div class="card" id="c-log">
     <h2>打卡表</h2>
     <div class="scroll"><table id="log"></table></div>
-    <div class="hint"><b>最低版也算完成</b>：扇贝只清复习 + 把当天那半集听完，8 分钟。<br><b>保号版也算</b>：打开扇贝看清数字关掉。不许断的是链条，不是强度。</div>
+    <div class="hint"><b>最低版也算完成</b>：剩 10 分钟 → 只做「说 60 秒 + 打卡」。<b>半程版</b>：剩 30 分钟 → 跟读 2 句 + 说 60 秒 + 打卡。<br><b>保号版也算</b>：打开扇贝看清数字关掉。不许断的是链条，不是强度。</div>
   </div>
 
   <div class="card" id="c-cp">
@@ -121,8 +121,7 @@ textarea,input{font-family:inherit}
 <script>
 var KEY='eng30.v1';
 var OUT={3:['A1','写 3 句 · 我的一天','我的一天'],5:['A2','说 30 秒 · 自我介绍','自我介绍'],10:['B1','写 3 句 · 我为什么在学英语','为什么学英语'],13:['B2','说 30 秒 · 我最喜欢的一个东西','最喜欢的东西'],17:['C1','写 5 句 · 我工作里最烦的一件事','工作里最烦的事'],20:['C2','说 1 分钟 · 一个你熟悉的地方','熟悉的地方'],24:['D1','写 5 句 · 我想改变的一个习惯','想改的习惯'],27:['D2','说 1 分钟 · 工作/爱好里的一个东西','产物彩排'],29:['草稿','Day 30 产物的第一版','产物草稿'],30:['产物','交 30 天产物（录音/日记/邮件择一）','交产物']};
-var A_TXT='听力听 1 遍（不看文本）→ 跟读最长句 3 遍 → 拼写前 5 词';
-var B_TXT='阅读读 → 只查简介那 3 词 → 抄 5 句 → 拼写清完余词 → 1 句复述';
+var STEP={A:[['0–10','盲听整集一遍，<b>不看文本</b>。听完记一个数：这一遍听懂了几个词'],['10–25','跟读 5 句，每句 3 遍：听 → 跟着读 → 自己读。追停顿和重音，不追速度'],['25–30','把那 5 句抄下来，<b>手写</b>'],['30–50','<b>说 60 秒</b>：今天 3 个词各造一句 → 连起来说 60 秒 → 录音 → 回放只找 1 个错'],['50–60','复盘打卡：听懂几个词 / 卡词 / 通过率']],B:[['0–15','读文本，<b>只查 3 个词</b>。第 4 个词也放过——查多了读不完'],['15–25','抄 5 句，只挑「我明天用得上的」'],['25–45','<b>写 5 句</b>（G 类写信骨架）：称呼 / 我为什么写 / 一件具体事 / 一个请求 / 结尾'],['45–55','出声读一遍自己写的。读不通就标记，<b>不当场改</b>'],['55–60','复盘打卡：卡词 / 通过率 / 写了几句']]};
 var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{}};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
@@ -144,19 +143,21 @@ function renderToday(){
   if(n<1){box.innerHTML='<h2>今天</h2><div class="big">还没开始</div><p>把上面的开始日期改成你的 Day 1。</p>';return;}
   if(n>30){box.innerHTML='<h2>今天</h2><div class="big">30 天走完了</div><p>拿三个检查点指标决定：继续 / 升级 / 停。</p>';return;}
   var d=n,a=ab(d),m=mode(d);
-  var step=a==='A'?'听力听 1 遍（<b>不看文本</b>）→ 挑最长那句跟读 3 遍 → 拼写入口做前 5 个词':'阅读入口读 → <b>只查简介里那 3 个词</b> → 抄 5 句 → 拼写入口清完余词 → 用 1 句英语复述这集在干什么';
+  var pure=(m==='纯复习');
+  var steps=STEP[a].map(function(x){return '<li><b>'+x[0]+' 分钟</b>　'+x[1]+'</li>';}).join('');
   var out=OUT[d]?'<div class="hint">今天的输出：<b>'+OUT[d][0]+'</b> '+OUT[d][1]+'　<a href="#outs" style="white-space:nowrap">↓ 去写</a><br><span style="opacity:.6">写完在页面下方「我的输出」里，自动保存。题目要求见 02-句型模板与造句库.md</span></div>':'<div class="hint">今天没有输出任务，把两个入口做完就算完成。</div>';
   var rn=d%3===0?'<div class="hint" style="border-left-color:#b91c1c"><b>今天是纯复习日</b>：扇贝切「纯复习单词」，不学新词，复习数量填 25，只做一轮，清不完也停。明天切回 4:1。</div>':'';
   var sw='<div style="margin-top:14px;padding-top:12px;border-top:1px dashed #e5e7eb">'+
-    '<div style="font-size:13px;font-weight:700;color:#0f766e">今天的造句（3 分钟，天天做）</div>'+
+    '<div style="font-size:13px;font-weight:700;color:#0f766e">今天的造句（写了再念出来，3 分钟）</div>'+
     '<input data-k="sentw" data-d="'+d+'" value="'+esc(state.sentw[d]||'')+'" placeholder="今天用的词（1 个就够）" style="width:100%;margin-top:7px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.5 inherit">'+
     '<textarea data-k="sent" data-d="'+d+'" rows="2" placeholder="用它造一句：写你昨天真干的一件事，土没关系" style="width:100%;margin-top:8px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.6 inherit;resize:vertical">'+esc(state.sent[d]||'')+'</textarea>'+
     '<div style="font-size:12px;color:#9ca3af;margin-top:6px">写完 30 秒：丢进翻译，看回译的中文是不是你想说的意思。</div></div>';
   box.innerHTML='<h2>今天 · Day '+d+' / 30 <span style="font-weight:400;font-size:12px;color:#9ca3af">'+dateOfDay(d)+'</span></h2>'+
-    '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(m==='4:1'?'t-n':'t-r')+'">扇贝 '+m+'</span></div>'+
-    '<ul class="steps"><li>① 扇贝：先清复习'+(m==='4:1'?'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句':'（今天不学新词）→ 挑 1 个复习里卡住的词造一句')+'（用昨天真干的一件事，土没关系）</li>'+
-    '<li>② Ethan English（12–15 分钟）：'+step+'</li>'+
-    '<li>③ 回来在下面打卡表勾一行</li></ul>'+rn+out+sw;
+    '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span></div>'+
+    '<div style="font-size:13px;color:#374151;margin:8px 0 0">① <b>扇贝（上班碎片时间做，不占这 1 小时）</b>：先清复习'+(pure?'（今天不学新词）→ 挑 1 个复习里卡住的词造一句':'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句')+'（用昨天真干的一件事，土没关系）</div>'+
+    '<div style="font-size:13px;font-weight:700;color:#0f766e;margin-top:14px">② 这 1 小时怎么用（Ep.'+ep(d)+' · '+a+' 日）</div>'+
+    '<ul class="steps">'+steps+'</ul>'+
+    '<div class="hint"><b>时间被砍时</b>：剩 30 分钟 → 跟读 2 句 + 说 60 秒 + 打卡；剩 10 分钟 → 只说 60 秒 + 打卡。<b>输出永远最后砍。</b></div>'+rn+out+sw;
 }
 
 function renderCal(){
