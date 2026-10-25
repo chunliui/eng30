@@ -42,6 +42,22 @@ nav{position:sticky;top:0;z-index:6;background:#fff;border-bottom:1px solid #eef
 nav a{flex:0 0 auto;padding:5px 12px;border-radius:999px;background:#f3f4f6;color:#374151;font-size:13px;text-decoration:none;white-space:nowrap}
 button{display:block;width:100%;margin-top:10px;padding:11px;border:0;border-radius:9px;background:#0f766e;color:#fff;font-size:15px;font-weight:600}
 button.g{background:#e5e7eb;color:#374151}
+.hero{position:relative;margin:-16px -16px 0;border-radius:14px 14px 0 0;overflow:hidden;background:#115e59}
+.hero img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover}
+.hero .cap{position:absolute;left:0;right:0;bottom:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff}
+.grid30{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.cell{height:14px;border-radius:3px;background:#e8ebee;display:block}
+.cell.on{background:#0f766e}
+.cell.now{box-shadow:0 0 0 2px #f59e0b inset}
+details.stepbox{margin-top:14px;background:#0f766e;border-radius:11px}
+details.stepbox>summary{list-style:none;padding:14px;color:#fff;font-weight:700;font-size:16px;text-align:center;cursor:pointer}
+details.stepbox>summary::-webkit-details-marker{display:none}
+details.stepbox[open]{background:#f8fafc;border:1px solid #eef0f2}
+details.stepbox[open]>summary{color:#0f766e;background:#ecfdf5;border-radius:11px 11px 0 0}
+details.stepbox ul{color:#111}
+details#c-more>summary{list-style:none;padding:14px 16px;background:#fff;border-radius:14px;font-size:15px;font-weight:700;color:#0f766e;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;margin:14px 0 0}
+details#c-more>summary::-webkit-details-marker{display:none}
+details#c-more>summary span{font-weight:400;color:#9ca3af;font-size:12px}
 textarea,input{font-family:inherit}
 </style>
 </head>
@@ -56,13 +72,7 @@ textarea,input{font-family:inherit}
 
 <nav>
   <a href="#todayCard">今天</a>
-  <a href="#c-cal">日历</a>
-  <a href="#c-frag">碎片</a>
-  <a href="#c-log">打卡</a>
-  <a href="#c-cp">检查点</a>
-  <a href="#c-out">输出</a>
-  <a href="#c-sent">造句</a>
-  <a href="#c-bk">备份</a>
+  <a href="#c-more">更多</a>
 </nav>
 
 <div class="wrap">
@@ -81,6 +91,8 @@ textarea,input{font-family:inherit}
     <div id="frag"></div>
     <div class="hint" style="margin-top:8px">连续做满 14 天再谈加量。<b>别在第二周翻倍</b>——那是断掉最常见的起点。真要加，加输出（多说多写），不加背新词。</div>
   </div>
+<details id="c-more">
+  <summary>更多<br><span>日历 · 打卡 · 检查点 · 我的输出 · 造句存档 · 49 集 · 碎片时间 · 备份</span></summary>
   <div class="card">
     <h2>一集的节奏（记这一次就够）</h2>
     <table>
@@ -135,6 +147,7 @@ textarea,input{font-family:inherit}
     <div id="bmsg" style="font-size:12px;color:#0f766e;margin-top:8px;min-height:16px"></div>
   </div>
 
+</details>
   <div class="foot">数据（含输出正文）只存在这台手机的浏览器里<br>换个浏览器或清缓存会丢失，别清</div>
 </div>
 
@@ -176,16 +189,32 @@ function renderToday(){
     '<input data-k="sentw" data-d="'+d+'" value="'+esc(state.sentw[d]||'')+'" placeholder="今天用的词（1 个就够）" style="width:100%;margin-top:7px;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.5 inherit">'+
     '<textarea data-k="sent" data-d="'+d+'" rows="2" placeholder="用它造一句：写你昨天真干的一件事，土没关系" style="width:100%;margin-top:8px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:8px;font:15px/1.6 inherit;resize:vertical">'+esc(state.sent[d]||'')+'</textarea>'+
     '<div style="font-size:12px;color:#9ca3af;margin-top:6px">写完 30 秒：丢进翻译，看回译的中文是不是你想说的意思。</div></div>';
-  box.innerHTML='<h2>今天 · Day '+d+' / 30 <span style="font-weight:400;font-size:12px;color:#9ca3af">'+dateOfDay(d)+'</span></h2>'+
-    '<div class="big"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> Ep.'+ep(d)+'　<span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span></div>'+
-    '<div style="background:#f8fafc;border:1px solid #eef0f2;border-radius:10px;padding:10px 12px;margin:10px 0 0">'+
-      '<div style="font-size:15px;font-weight:700">Ep.'+ep(d)+' '+einfo.t+' <span style="font-weight:400;font-size:13px;color:#6b7280">'+einfo.e+'</span></div>'+
-      '<div style="font-size:12px;color:#6b7280;margin:2px 0 9px">'+einfo.m+' 分钟 · '+einfo.l+' 句　（内容在 ethanenglish.cn，点下面入口直接到这一集）</div>'+
-      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+epLinks(ep(d))+'</div></div>'+
-    '<div style="font-size:13px;color:#374151;margin:8px 0 0">① <b>扇贝（上班碎片时间做，不占这 1 小时）</b>：先清复习'+(pure?'（今天不学新词）→ 挑 1 个复习里卡住的词造一句':'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句')+'（用昨天真干的一件事，土没关系）</div>'+
-    '<div style="font-size:13px;font-weight:700;color:#0f766e;margin-top:14px">② 这 1 小时怎么用（Ep.'+ep(d)+' · '+a+' 日）</div>'+
-    '<ul class="steps">'+steps+'</ul>'+
-    '<div class="hint"><b>时间被砍时</b>：剩 30 分钟 → 跟读 2 句 + 说 60 秒 + 打卡；剩 10 分钟 → 只说 60 秒 + 打卡。<b>输出永远最后砍。</b></div>'+rn+out+sw;
+  var doneCnt=0,streak=0,i;
+  for(i=1;i<=30;i++){ if(state.done[i]) doneCnt++; }
+  for(i=(state.done[d]?d:d-1);i>=1;i--){ if(state.done[i]) streak++; else break; }
+  var cells='';
+  for(i=1;i<=30;i++){ cells+='<span class="cell'+(state.done[i]?' on':'')+(i===d?' now':'')+'"></span>'; }
+  var cheer = streak>=14 ? '连续 '+streak+' 天，已经不是冲动了。'
+            : streak>=7 ? '连续 '+streak+' 天，撑过第一周了。'
+            : streak>0 ? '连着 '+streak+' 天，别断在这一天。'
+            : '今天开个头就算赢。';
+  box.innerHTML=
+    '<div class="hero"><img src="covers/'+ep(d)+'.webp" alt="" onerror="this.style.display=\'none\'">'+
+      '<div class="cap"><div style="font-size:12px;opacity:.9">Day '+d+' / 30 · '+dateOfDay(d)+'</div>'+
+        '<div style="font-size:21px;font-weight:800;line-height:1.3;margin-top:2px">Ep.'+ep(d)+' '+einfo.t+'</div>'+
+        '<div style="font-size:12px;opacity:.85">'+einfo.e+'　'+einfo.m+' 分钟 · '+einfo.l+' 句</div></div></div>'+
+    '<div style="margin-top:14px">'+
+      '<div class="grid30">'+cells+'</div>'+
+      '<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#6b7280;margin-top:7px"><span>完成 '+doneCnt+' / 30 天</span><span>'+cheer+'</span></div>'+
+      '<div style="margin-top:13px"><span class="tag '+(a==='A'?'t-a':'t-b')+'">'+a+' 日</span> <span class="tag '+(pure?'t-r':'t-n')+'">扇贝 '+m+'</span></div>'+
+      '<details class="stepbox"><summary>'+(state.done[d]?'今天已打卡 ✓ 想看步骤就展开':'开始今天的 60 分钟 →')+'</summary>'+
+        '<ul class="steps">'+steps+'</ul>'+
+        '<div class="hint"><b>时间被砍时</b>：剩 30 分钟 → 跟读 2 句 + 说 60 秒 + 打卡；剩 10 分钟 → 只说 60 秒 + 打卡。<b>输出永远最后砍。</b></div>'+
+      '</details>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+epLinks(ep(d))+'</div>'+
+'<button data-act="done" data-d="'+d+'" style="margin-top:14px;background:'+(state.done[d]?'#047857':'#0f766e')+'">'+(state.done[d]?'今天已打卡 ✓　点一下撤销':'今天做完了 · 打卡')+'</button>'+
+    '<div style="font-size:13px;color:#374151;margin:11px 0 0">① <b>扇贝（上班碎片时间做，不占这 1 小时）</b>：先清复习'+(pure?'（今天不学新词）→ 挑 1 个复习里卡住的词造一句':'，再看新词 5 个 → 挑 1 个最不熟的<b>新词</b>造一句')+'（用昨天真干的一件事，土没关系）</div>'+
+    rn+out+sw+'</div>';
 }
 
 function renderCal(){
@@ -243,6 +272,13 @@ document.addEventListener('input',function(e){
   if(!k||(k==='done'||k==='fr1'||k==='fr2'||k==='fr3')) return;
   if(k==='cp'){state.cp[d]=x.value;} else {state[k][d]=x.value;}
   save();
+});
+document.addEventListener('click',function(e){
+  var x=e.target;
+  while(x&&x.getAttribute&&!x.getAttribute('data-act')){ x=x.parentNode; }
+  if(!x||!x.getAttribute) return;
+  var k=x.getAttribute('data-act'),d=x.getAttribute('data-d');
+  if(k==='done'){ state.done[d]=!state.done[d]; save(); render(); }
 });
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
