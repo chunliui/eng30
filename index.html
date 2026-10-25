@@ -57,6 +57,7 @@ textarea,input{font-family:inherit}
 <nav>
   <a href="#todayCard">今天</a>
   <a href="#c-cal">日历</a>
+  <a href="#c-frag">碎片</a>
   <a href="#c-log">打卡</a>
   <a href="#c-cp">检查点</a>
   <a href="#c-out">输出</a>
@@ -67,6 +68,19 @@ textarea,input{font-family:inherit}
 <div class="wrap">
   <div class="card" id="todayCard"></div>
 
+  <div class="card" id="c-frag">
+    <h2>碎片时间怎么用（上班空档）</h2>
+    <div class="hint" style="margin:0 0 10px">规则一条：<b>碎片时间只做「重复」和「输入」，不做「新的」</b>。要连贯思考的（读文稿、写 5 句、跟读一整段）只在那 60 分钟里做。被打断也不亏的，才放这儿。</div>
+    <table>
+      <tr><td class="c"><span class="tag t-a">走</span></td><td><b>巡查 / 上下楼 / 去别的楼号</b>（能戴耳机）<br>复听<b>昨天那一集</b>，不听新的。只要一个结果：这遍抓住 3 个完整句。</td></tr>
+      <tr><td class="c"><span class="tag t-a">等</span></td><td><b>等验收 / 等料 / 坐车里</b>（能看手机，3–5 分钟）<br>扇贝照旧。再加 60 秒：昨天卡的 3 个词，不看中文在备忘录里拼出来。</td></tr>
+      <tr><td class="c"><span class="tag t-b">静</span></td><td><b>班前会 / 交接 / 旁边有人</b>（不能出声）<br>心里把昨天抄的 5 句过一遍，一句一句念，想不起来的直接跳过。</td></tr>
+      <tr><td class="c"><span class="tag t-b">10分</span></td><td><b>刚写完资料 / 饭后</b>（能出声，10 分钟）<br>放昨天的录音听一遍，只找 1 个错——这是全套里最省力、进步最快的一步。</td></tr>
+    </table>
+    <h3 style="margin:14px 0 4px;font-size:14px">今天勾一下（加起来约 15 分钟，不占那 60 分钟）</h3>
+    <div id="frag"></div>
+    <div class="hint" style="margin-top:8px">连续做满 14 天再谈加量。<b>别在第二周翻倍</b>——那是断掉最常见的起点。真要加，加输出（多说多写），不加背新词。</div>
+  </div>
   <div class="card">
     <h2>一集的节奏（记这一次就够）</h2>
     <table>
@@ -131,7 +145,7 @@ var EPS=[[1,"起床","Getting Out of Bed",9,202],[2,"洗漱","Brushing Teeth & W
 function epOf(n){for(var i=0;i<EPS.length;i++){if(EPS[i][0]===n)return {t:EPS[i][1],e:EPS[i][2],m:EPS[i][3],l:EPS[i][4]};}return {t:'Ep.'+n,e:'',m:0,l:0};}
 function epLinks(n){var r=[['听力','listen'],['阅读','read'],['拼写','practice'],['视频','watch']];return r.map(function(x){return '<a href="https://ethanenglish.cn/#/'+x[1]+'/'+n+'" style="flex:1 1 44%;text-align:center;padding:9px 6px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;font-size:13px;font-weight:600;color:#0f766e;text-decoration:none;margin:0 0 8px">'+x[0]+'</a>';}).join('');}
 var STEP={A:[['0–10','盲听整集一遍，<b>不看文本</b>。听完记一个数：这一遍听懂了几个词'],['10–25','跟读 5 句，每句 3 遍：听 → 跟着读 → 自己读。追停顿和重音，不追速度'],['25–30','把那 5 句抄下来，<b>手写</b>'],['30–50','<b>说 60 秒</b>：今天 3 个词各造一句 → 连起来说 60 秒 → 录音 → 回放只找 1 个错'],['50–60','复盘打卡：听懂几个词 / 卡词 / 通过率']],B:[['0–15','读文本，<b>只查 3 个词</b>。第 4 个词也放过——查多了读不完'],['15–25','抄 5 句，只挑「我明天用得上的」'],['25–45','<b>写 5 句</b>（G 类写信骨架）：称呼 / 我为什么写 / 一件具体事 / 一个请求 / 结尾'],['45–55','出声读一遍自己写的。读不通就标记，<b>不当场改</b>'],['55–60','复盘打卡：卡词 / 通过率 / 写了几句']]};
-var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{}};
+var state={start:'',done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{},fr1:{},fr2:{},fr3:{}};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
@@ -219,13 +233,14 @@ document.addEventListener('change',function(e){
   var x=e.target,k=x.getAttribute('data-k'),d=x.getAttribute('data-d');
   if(!k) return;
   if(k==='done'){ state.done[d]=x.checked; }
+  else if(k==='fr1'||k==='fr2'||k==='fr3'){ state[k][d]=x.checked?'1':''; }
   else if(k==='cp'){ state.cp[d]=x.value; }
   else { state[k][d]=x.value; }
   save();
 });
 document.addEventListener('input',function(e){
   var x=e.target,k=x.getAttribute('data-k'),d=x.getAttribute('data-d');
-  if(!k||k==='done') return;
+  if(!k||(k==='done'||k==='fr1'||k==='fr2'||k==='fr3')) return;
   if(k==='cp'){state.cp[d]=x.value;} else {state[k][d]=x.value;}
   save();
 });
@@ -297,7 +312,12 @@ function renderEps(){
        '<td class="c">'+e[3]+'</td><td class="c">'+e[4]+'</td></tr>';}
   t.innerHTML=h;
 }
-function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();renderEps();renderSents();}
+function renderFrag(){
+  var t=document.getElementById('frag');if(!t)return;
+  var n=dayOf(),it=[['fr1','扇贝：复习清完 + 新词 5 + 一句造句'],['fr2','复听：昨天那一集再听一遍'],['fr3','默写：昨天卡的 3 个词拼一遍']];
+  t.innerHTML=it.map(function(x){return '<label style="display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f1f2f4;font-size:14px;line-height:1.45"><input type="checkbox" style="margin-top:3px" data-k="'+x[0]+'" data-d="'+n+'"'+(state[x[0]][n]?' checked':'')+'><span>'+x[1]+'</span></label>';}).join('');
+}
+function render(){renderToday();renderCal();renderLog();renderCp();renderOuts();renderEps();renderFrag();renderSents();}
 render();
 </script>
 </body>
