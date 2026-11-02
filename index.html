@@ -75,6 +75,8 @@ textarea,input{font-family:inherit}
 .segt{font-size:13.5px;line-height:1.55;color:#374151}
 .segt b{color:#111827}
 .segt em{display:block;font-style:normal;font-size:12px;color:#9ca3af;margin-top:3px}
+.segjump{display:inline-block;margin:-4px 0 10px 30px;font-size:12.5px;color:#0f766e;text-decoration:none;border-bottom:1px dashed #99f6e4;padding-bottom:1px}
+.segjump:active{color:#115e59}
 .segbtn{display:block;text-align:center;padding:11px;background:#0f766e;color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-top:6px}
 .segfoot{font-size:12px;color:#6b7280;margin-top:8px}
 </style>
@@ -284,17 +286,19 @@ function renderSeg(){
   var a1=Math.floor((sel-1)*L/p)+1, a2=Math.floor(sel*L/p), cnt=a2-a1+1;
   var r=segRec(e,sel), gd=segDay(e,sel);
   h+='<div class="seghd">第 '+sel+' 天 / 共 '+p+' 天'+(sel===todayI?'　<span class="tag t-a">今天</span>':'　<span style="font-size:12px;color:#b45309">你在看别的段</span>'+(todayI!==sel?'　<span data-segv="'+todayI+'" style="color:#0f766e;text-decoration:underline;cursor:pointer">回到今天</span>':''))+'</div>';
+  var go=(sel===todayI?'':'&day='+sel);
+  var base='https://chunliui.github.io/engvocab/?ep='+e+go;
   var rows=[
-    ['a','听写','第 '+s1+'–'+s2+' 句','整句放三遍：只听不写 → 写下听到的音 → 补全后对照改，只圈错处不重抄'],
-    ['b','阅读','第 '+a1+'–'+a2+' 句（'+cnt+' 句）','只查 3 个词，第 4 个放过；读完用一句中文说出这段讲了什么'],
-    ['c','背词','这一段的词','点下面的按钮进背词站，已经切到这一集的第 '+sel+' 天，出 5 张卡']
+    ['a','听写','第 '+s1+'–'+s2+' 句','整句放三遍：只听不写 → 写下听到的音 → 补全后对照改，只圈错处不重抄', '去听这 5 句 →', base+'&v=dict'],
+    ['b','阅读','第 '+a1+'–'+a2+' 句（'+cnt+' 句）','只查 3 个词，第 4 个放过；读完用一句中文说出这段讲了什么', '去读这 '+cnt+' 句 →', base+'&v=read'],
+    ['c','背词','这一段的词','已经切到这一集的第 '+sel+' 天，出 5 张卡', '去背第 '+sel+' 天的词 →', base+'&v=word']
   ];
   for(var j=0;j<rows.length;j++){
     var k=rows[j][0], on=!!r[k];
     h+='<label class="segrow'+(on?' on':'')+'"><input type="checkbox" data-segk="'+k+'" data-sege="'+e+'" data-segi="'+sel+'"'+(on?' checked':'')+'>'+
        '<span class="segt"><b>'+rows[j][1]+'</b>　'+rows[j][2]+'<em>'+rows[j][3]+'</em></span></label>';
+    h+='<a class="segjump" href="'+rows[j][5]+'">'+rows[j][4]+'</a>';
   }
-  h+='<a class="segbtn" href="https://chunliui.github.io/engvocab/?ep='+e+'&day='+sel+'">去背第 '+sel+' 天的词 →</a>';
   h+='<div class="segfoot">'+(state.done[gd]?'第 '+sel+' 天已打卡 ✓':'这一段还没打卡。三段都勾了再点上面的「打卡」')+'</div>';
   box.innerHTML=h;
 }
