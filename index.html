@@ -59,6 +59,24 @@ details#c-more>summary{list-style:none;padding:14px 16px;background:#fff;border-
 details#c-more>summary::-webkit-details-marker{display:none}
 details#c-more>summary span{font-weight:400;color:#9ca3af;font-size:12px}
 textarea,input{font-family:inherit}
+
+.segbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.seg{flex:1 1 0;min-width:72px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer;font:inherit;color:inherit}
+.seg b{display:block;font-size:13px;color:#111827}
+.seg span{display:block;font-size:11px;color:#9ca3af;margin-top:2px}
+.seg.on{border-color:#0f766e;background:#ecfdf5}
+.seg.on b{color:#0f766e}
+.seg.full{border-color:#0f766e}
+.seg.full span{color:#0f766e;font-weight:700}
+.seghd{font-size:13px;font-weight:700;color:#0f766e;margin:4px 0 8px}
+.segrow{display:flex;gap:9px;align-items:flex-start;padding:10px 11px;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:8px;background:#fff;cursor:pointer}
+.segrow.on{background:#f0fdf4;border-color:#a7f3d0}
+.segrow input{margin-top:2px;width:18px;height:18px;flex:0 0 auto}
+.segt{font-size:13.5px;line-height:1.55;color:#374151}
+.segt b{color:#111827}
+.segt em{display:block;font-style:normal;font-size:12px;color:#9ca3af;margin-top:3px}
+.segbtn{display:block;text-align:center;padding:11px;background:#0f766e;color:#fff;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-top:6px}
+.segfoot{font-size:12px;color:#6b7280;margin-top:8px}
 </style>
 </head>
 <body>
@@ -78,11 +96,14 @@ textarea,input{font-family:inherit}
 
 <nav>
   <a href="#todayCard">今天</a>
+  <a href="#segCard">分段</a>
   <a href="#c-more">更多</a>
 </nav>
 
 <div class="wrap">
   <div class="card" id="todayCard"></div>
+
+  <div class="card" id="segCard"></div>
 
   <div class="card" id="c-frag">
     <h2>碎片时间怎么用（上班空档）</h2>
@@ -175,7 +196,7 @@ function dayBlocks(d){
     ['55–60','<b>打卡</b>：记两个数（这 5 句写对几个词、听懂几个词）→ 挑 1 个词造一句（用昨天真干的一件事）→ 点下面「今天这一步做完了」']
   ];
 }
-var state={start:'',per:4,done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{},fr1:{},fr2:{},fr3:{}};
+var state={start:'',per:4,done:{},min:{},card:{},rate:{},cp:{},out:{},sentw:{},sent:{},fr1:{},fr2:{},fr3:{},seg:{},segv:0};
 try{var raw=localStorage.getItem(KEY);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 function ymd(d){var p=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
@@ -243,6 +264,41 @@ function renderToday(){
     rn+out+sw+'</div>';
 }
 
+function segDay(e,i){return (e-1)*per()+i;}
+function segRec(e,i){ if(!state.seg) state.seg={}; var k=e+'-'+i; if(!state.seg[k]) state.seg[k]={}; return state.seg[k]; }
+function segDone(e,i){ var r=segRec(e,i); return (r.a?1:0)+(r.b?1:0)+(r.c?1:0); }
+function renderSeg(){
+  var box=document.getElementById('segCard'); if(!box) return;
+  var p=per(), d=Math.min(curDay(),30), e=ep(d), todayI=phOf(d).i;
+  var sel=+state.segv||todayI; if(sel<1||sel>p) sel=todayI;
+  var einfo=epOf(e), L=einfo.l||150;
+  var h='<h2>分段走这一集 · Ep.'+e+' '+einfo.t+'</h2>';
+  h+='<div class="hint" style="margin:0 0 10px">这一集按 <b>'+p+' 天</b> 切成 '+p+' 段，段段不重叠：每段有自己的听写 5 句、自己的阅读句段、自己那一段的词。<b>点哪段就跳到哪段</b>，勾完三格这一段就算完成——这就是你查「今天做完了没有」的地方。</div>';
+  h+='<div class="segbar">';
+  for(var i=1;i<=p;i++){
+    var n=segDone(e,i), passed=!!state.done[segDay(e,i)];
+    h+='<button class="seg'+(i===sel?' on':'')+(n===3?' full':'')+'" data-segv="'+i+'"><b>第 '+i+' 天</b><span>'+(n===3?'✓ 三段齐':n+'/3')+(passed?' · 已打卡':'')+'</span></button>';
+  }
+  h+='</div>';
+  var s1=(sel-1)*5+1, s2=sel*5;
+  var a1=Math.floor((sel-1)*L/p)+1, a2=Math.floor(sel*L/p), cnt=a2-a1+1;
+  var r=segRec(e,sel), gd=segDay(e,sel);
+  h+='<div class="seghd">第 '+sel+' 天 / 共 '+p+' 天'+(sel===todayI?'　<span class="tag t-a">今天</span>':'　<span style="font-size:12px;color:#b45309">你在看别的段</span>'+(todayI!==sel?'　<span data-segv="'+todayI+'" style="color:#0f766e;text-decoration:underline;cursor:pointer">回到今天</span>':''))+'</div>';
+  var rows=[
+    ['a','听写','第 '+s1+'–'+s2+' 句','整句放三遍：只听不写 → 写下听到的音 → 补全后对照改，只圈错处不重抄'],
+    ['b','阅读','第 '+a1+'–'+a2+' 句（'+cnt+' 句）','只查 3 个词，第 4 个放过；读完用一句中文说出这段讲了什么'],
+    ['c','背词','这一段的词','点下面的按钮进背词站，已经切到这一集的第 '+sel+' 天，出 5 张卡']
+  ];
+  for(var j=0;j<rows.length;j++){
+    var k=rows[j][0], on=!!r[k];
+    h+='<label class="segrow'+(on?' on':'')+'"><input type="checkbox" data-segk="'+k+'" data-sege="'+e+'" data-segi="'+sel+'"'+(on?' checked':'')+'>'+
+       '<span class="segt"><b>'+rows[j][1]+'</b>　'+rows[j][2]+'<em>'+rows[j][3]+'</em></span></label>';
+  }
+  h+='<a class="segbtn" href="https://chunliui.github.io/engvocab/?ep='+e+'&day='+sel+'">去背第 '+sel+' 天的词 →</a>';
+  h+='<div class="segfoot">'+(state.done[gd]?'第 '+sel+' 天已打卡 ✓':'这一段还没打卡。三段都勾了再点上面的「打卡」')+'</div>';
+  box.innerHTML=h;
+}
+
 function renderCal(){
   var t=document.getElementById('cal'),n=curDay();
   var h='<tr><th class="c">Day</th><th>Ep / 日型</th><th>扇贝</th><th>输出</th></tr>';
@@ -285,6 +341,9 @@ function renderCp(){
 }
 
 document.addEventListener('change',function(e){
+  var sk=e.target.getAttribute('data-segk');
+  if(sk){ var se=e.target.getAttribute('data-sege'), si=e.target.getAttribute('data-segi');
+    segRec(se,si)[sk]=e.target.checked?1:''; save(); renderSeg(); renderCal(); return; }
   var x=e.target,k=x.getAttribute('data-k'),d=x.getAttribute('data-d');
   if(!k) return;
   if(k==='done'){ state.done[d]=x.checked; }
@@ -306,6 +365,8 @@ document.addEventListener('click',function(e){
   var k=x.getAttribute('data-act'),d=x.getAttribute('data-d');
   if(k==='done'){ state.done[curDay()]=true; save(); render(); }
   if(k==='undo'){ var c=doneCnt(); if(c>0){ delete state.done[c]; save(); render(); } }
+  var sv=x.getAttribute('data-segv');
+  if(sv){ state.segv=+sv; save(); renderSeg(); }
 });
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -383,7 +444,7 @@ function render(){
   var tl=document.getElementById('todaylbl'),pl=document.getElementById('poslbl');
   if(tl) tl.textContent=todayStr();
   if(pl) pl.textContent='第 '+Math.min(curDay(),30)+' 步 / 30';
-  renderTempo();renderToday();renderCal();renderLog();renderCp();renderOuts();renderSents();renderEps();renderFrag();
+  renderTempo();renderToday();renderSeg();renderCal();renderLog();renderCp();renderOuts();renderSents();renderEps();renderFrag();
   var sp=document.getElementById('epspan');
   if(sp) sp.textContent='Ep.1–Ep.'+Math.ceil(30/per())+'（一集 '+per()+' 天）';
 }
