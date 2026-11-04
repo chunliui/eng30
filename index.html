@@ -282,14 +282,15 @@ function renderSeg(){
     h+='<button class="seg'+(i===sel?' on':'')+(n===3?' full':'')+'" data-segv="'+i+'"><b>第 '+i+' 天</b><span>'+(n===3?'✓ 三段齐':n+'/3')+(passed?' · 已打卡':'')+'</span></button>';
   }
   h+='</div>';
-  var s1=(sel-1)*5+1, s2=sel*5;
   var a1=Math.floor((sel-1)*L/p)+1, a2=Math.floor(sel*L/p), cnt=a2-a1+1;
+  var dn=Math.max(5, Math.min(12, Math.round(L/p/5)));
+  var s1=(sel-1)*5+1, s2=Math.min(a2, s1+dn-1);
   var r=segRec(e,sel), gd=segDay(e,sel);
   h+='<div class="seghd">第 '+sel+' 天 / 共 '+p+' 天'+(sel===todayI?'　<span class="tag t-a">今天</span>':'　<span style="font-size:12px;color:#b45309">你在看别的段</span>'+(todayI!==sel?'　<span data-segv="'+todayI+'" style="color:#0f766e;text-decoration:underline;cursor:pointer">回到今天</span>':''))+'</div>';
   var go=(sel===todayI?'':'&day='+sel);
   var base='https://chunliui.github.io/engvocab/?ep='+e+go;
   var rows=[
-    ['a','听写','第 '+s1+'–'+s2+' 句','整句放三遍：只听不写 → 写下听到的音 → 补全后对照改，只圈错处不重抄', '去听这 5 句 →', base+'&v=dict'],
+    ['a','听写','第 '+s1+'–'+s2+' 句（'+(s2-s1+1)+' 句）','整句放三遍：只听不写 → 写下听到的音 → 补全后对照改，只圈错处不重抄', '去听这 '+(s2-s1+1)+' 句 →', base+'&v=dict'],
     ['b','阅读','第 '+a1+'–'+a2+' 句（'+cnt+' 句）','只查 3 个词，第 4 个放过；读完用一句中文说出这段讲了什么', '去读这 '+cnt+' 句 →', base+'&v=read'],
     ['c','背词','这一段的词','已经切到这一集的第 '+sel+' 天，出 5 张卡', '去背第 '+sel+' 天的词 →', base+'&v=word']
   ];
